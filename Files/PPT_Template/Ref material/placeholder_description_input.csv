@@ -1,0 +1,76 @@
+﻿Slide_Layout_Index,Slide_Layout_Name,Placeholder_Index,Placeholder_Description
+0,Cover,0,Cover Text PH
+0,Cover,4,Slide Number PH
+1,Objective,4,Slide Number PH
+1,Objective,10,Footnote PH
+1,Objective,11,Background Header PH
+1,Objective,12,Actions Header PH
+1,Objective,13,Background Subheader PH
+1,Objective,14,Actions Subheader PH
+1,Objective,15,Background Text PH
+1,Objective,16,Actions Text PH
+2,Scope,4,Slide Number PH
+2,Scope,10,Footnote PH
+2,Scope,11,Overview PH
+2,Scope,12,Scope Table PH
+3,Divider_normal,0,Divider Text PH
+3,Divider_normal,4,Slide Number PH
+4,Divider_simple,0,Divider Text PH
+4,Divider_simple,4,Slide Number PH
+4,Divider_simple,10,Footnote PH
+5,Scope_of_Work,4,Slide Number PH
+5,Scope_of_Work,10,Footnote PH
+5,Scope_of_Work,19,People Conversations PH
+5,Scope_of_Work,23,Scope Summary PH
+6,Content_Vertical,4,Slide Number PH
+6,Content_Vertical,10,Footnote PH
+6,Content_Vertical,15,Core Commentary PH
+6,Content_Vertical,16,Country PH
+6,Content_Vertical,17,Segment PH
+6,Content_Vertical,18,Supplementary Commentary PH
+6,Content_Vertical,19,Top Right PH
+6,Content_Vertical,21,Content Table PH
+6,Content_Vertical,22,Questions Text PH
+7,Content_Horizontal,4,Slide Number PH
+7,Content_Horizontal,10,Footnote PH
+7,Content_Horizontal,15,Core Commentary PH
+7,Content_Horizontal,16,Country PH
+7,Content_Horizontal,17,Segment PH
+7,Content_Horizontal,18,Supplementary Commentary PH
+7,Content_Horizontal,19,Top Right PH
+7,Content_Horizontal,21,Content Table PH
+7,Content_Horizontal,22,Questions Text PH
+8,Freestyle_Vertical,4,Slide Number PH
+8,Freestyle_Vertical,10,Footnote PH
+8,Freestyle_Vertical,16,Country PH
+8,Freestyle_Vertical,17,Segment PH
+8,Freestyle_Vertical,18,Commentary PH
+8,Freestyle_Vertical,19,Top Right PH
+8,Freestyle_Vertical,22,Questions Text PH
+9,Content_Horizontal_Chart,4,Slide Number PH
+9,Content_Horizontal_Chart,10,Footnote PH
+9,Content_Horizontal_Chart,15,Core Commentary PH
+9,Content_Horizontal_Chart,16,Country PH
+9,Content_Horizontal_Chart,17,Segment PH
+9,Content_Horizontal_Chart,18,Supplementary Commentary PH
+9,Content_Horizontal_Chart,19,Top Right PH
+9,Content_Horizontal_Chart,20,Content Chart PH
+10,KOL,0,Title PH
+10,KOL,4,Slide Number PH
+10,KOL,10,Footnote PH
+10,KOL,12,Top KOL Table PH
+10,KOL,13,Bot KOL Table PH
+10,KOL,14,KOL Rank 1 Picture PH
+10,KOL,15,KOL Rank 2 Picture PH
+10,KOL,16,KOL Rank 3 Picture PH
+10,KOL,17,KOL Rank 4 Picture PH
+10,KOL,18,KOL Rank 5 Picture PH
+10,KOL,19,KOL Rank 6 Picture PH
+10,KOL,20,KOL Rank 7 Picture PH
+10,KOL,21,KOL Rank 8 Picture PH
+10,KOL,22,KOL Rank 9 Picture PH
+10,KOL,23,KOL Rank 10 Picture PH
+11,End,4,Slide Number PH
+12,blank,0,Title PH
+12,blank,4,Slide Number PH
+12,blank,10,Footnote PH

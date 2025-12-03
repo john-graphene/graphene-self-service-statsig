@@ -1,0 +1,85 @@
+Slide_Master_Index,Slide_Layout_Index,Slide_Layout_Name,Placeholder_Index,Placeholder_Name,Placeholder_Description,Slide_Type
+0,0,Cover,0,Title 1,Cover Text PH,Deck_Cover
+0,0,Cover,4,Slide Number Placeholder 5,Slide Number PH,Deck_Cover
+0,1,Objective,4,Slide Number Placeholder 5,Slide Number PH,Project_Objective
+0,1,Objective,10,Text Placeholder 5,Footnote PH,Project_Objective
+0,1,Objective,11,Text Placeholder 2,Background Header PH,Project_Objective
+0,1,Objective,12,Text Placeholder 2,Actions Header PH,Project_Objective
+0,1,Objective,13,Text Placeholder 2,Background Subheader PH,Project_Objective
+0,1,Objective,14,Text Placeholder 2,Actions Subheader PH,Project_Objective
+0,1,Objective,15,Text Placeholder 7,Background Text PH,Project_Objective
+0,1,Objective,16,Text Placeholder 7,Actions Text PH,Project_Objective
+0,2,Scope,4,Slide Number Placeholder 5,Slide Number PH,Project_Scope
+0,2,Scope,10,Text Placeholder 5,Footnote PH,Project_Scope
+0,2,Scope,11,Text Placeholder 2,Overview PH,Project_Scope
+0,2,Scope,12,Table Placeholder 8,Scope Table PH,Project_Scope
+0,3,Divider_normal,0,Title 1,Divider Text PH,Section_Divider
+0,3,Divider_normal,4,Slide Number Placeholder 5,Slide Number PH,Section_Divider
+0,4,Divider_simple,0,Title 1,Divider Text PH,
+0,4,Divider_simple,4,Slide Number Placeholder 5,Slide Number PH,
+0,4,Divider_simple,10,Text Placeholder 5,Footnote PH,
+0,5,Scope_of_Work,4,Slide Number Placeholder 5,Slide Number PH,SOW
+0,5,Scope_of_Work,10,Text Placeholder 5,Footnote PH,SOW
+0,5,Scope_of_Work,19,Table Placeholder 5,People Conversations PH,SOW
+0,5,Scope_of_Work,23,Text Placeholder 3,Scope Summary PH,SOW
+0,6,Content_Vertical,4,Slide Number Placeholder 5,Slide Number PH,Performance
+0,6,Content_Vertical,4,Slide Number Placeholder 5,Slide Number PH,Drivers
+0,6,Content_Vertical,10,Text Placeholder 5,Footnote PH,Performance
+0,6,Content_Vertical,10,Text Placeholder 5,Footnote PH,Drivers
+0,6,Content_Vertical,15,Text Placeholder 3,Core Commentary PH,Performance
+0,6,Content_Vertical,15,Text Placeholder 3,Core Commentary PH,Drivers
+0,6,Content_Vertical,16,Text Placeholder 3,Country PH,Performance
+0,6,Content_Vertical,16,Text Placeholder 3,Country PH,Drivers
+0,6,Content_Vertical,17,Text Placeholder 3,Segment PH,Performance
+0,6,Content_Vertical,17,Text Placeholder 3,Segment PH,Drivers
+0,6,Content_Vertical,18,Text Placeholder 3,Supplementary Commentary PH,Performance
+0,6,Content_Vertical,18,Text Placeholder 3,Supplementary Commentary PH,Drivers
+0,6,Content_Vertical,19,Text Placeholder 3,Top Right PH,Performance
+0,6,Content_Vertical,19,Text Placeholder 3,Top Right PH,Drivers
+0,6,Content_Vertical,21,Table Placeholder 11,Content Table PH,Performance
+0,6,Content_Vertical,21,Table Placeholder 11,Content Table PH,Drivers
+0,6,Content_Vertical,22,Text Placeholder 9,Questions Text PH,Performance
+0,6,Content_Vertical,22,Text Placeholder 9,Questions Text PH,Drivers
+0,7,Content_Horizontal,4,Slide Number Placeholder 5,Slide Number PH,
+0,7,Content_Horizontal,10,Text Placeholder 5,Footnote PH,
+0,7,Content_Horizontal,15,Text Placeholder 3,Core Commentary PH,
+0,7,Content_Horizontal,16,Text Placeholder 3,Country PH,
+0,7,Content_Horizontal,17,Text Placeholder 3,Segment PH,
+0,7,Content_Horizontal,18,Text Placeholder 3,Supplementary Commentary PH,
+0,7,Content_Horizontal,19,Text Placeholder 3,Top Right PH,
+0,7,Content_Horizontal,21,Table Placeholder 11,Content Table PH,
+0,7,Content_Horizontal,22,Text Placeholder 9,Questions Text PH,
+0,8,Freestyle_Vertical,4,Slide Number Placeholder 5,Slide Number PH,
+0,8,Freestyle_Vertical,10,Text Placeholder 5,Footnote PH,
+0,8,Freestyle_Vertical,16,Text Placeholder 3,Country PH,
+0,8,Freestyle_Vertical,17,Text Placeholder 3,Segment PH,
+0,8,Freestyle_Vertical,18,Text Placeholder 3,Commentary PH,
+0,8,Freestyle_Vertical,19,Text Placeholder 3,Top Right PH,
+0,8,Freestyle_Vertical,22,Text Placeholder 9,Questions Text PH,
+0,9,Content_Horizontal_Chart,4,Slide Number Placeholder 5,Slide Number PH,Emerging Trends
+0,9,Content_Horizontal_Chart,10,Text Placeholder 5,Footnote PH,Emerging Trends
+0,9,Content_Horizontal_Chart,15,Text Placeholder 3,Core Commentary PH,Emerging Trends
+0,9,Content_Horizontal_Chart,16,Text Placeholder 3,Country PH,Emerging Trends
+0,9,Content_Horizontal_Chart,17,Text Placeholder 3,Segment PH,Emerging Trends
+0,9,Content_Horizontal_Chart,18,Text Placeholder 3,Supplementary Commentary PH,Emerging Trends
+0,9,Content_Horizontal_Chart,19,Text Placeholder 3,Top Right PH,Emerging Trends
+0,9,Content_Horizontal_Chart,20,Chart Placeholder 4,Content Chart PH,Emerging Trends
+0,10,KOL,0,Title 1,Title PH,KOL
+0,10,KOL,4,Slide Number Placeholder 5,Slide Number PH,KOL
+0,10,KOL,10,Text Placeholder 5,Footnote PH,KOL
+0,10,KOL,12,Table Placeholder 10,Top KOL Table PH,KOL
+0,10,KOL,13,Table Placeholder 10,Bot KOL Table PH,KOL
+0,10,KOL,14,Picture Placeholder 14,KOL Rank 1 Picture PH,KOL
+0,10,KOL,15,Picture Placeholder 14,KOL Rank 2 Picture PH,KOL
+0,10,KOL,16,Picture Placeholder 14,KOL Rank 3 Picture PH,KOL
+0,10,KOL,17,Picture Placeholder 14,KOL Rank 4 Picture PH,KOL
+0,10,KOL,18,Picture Placeholder 14,KOL Rank 5 Picture PH,KOL
+0,10,KOL,19,Picture Placeholder 14,KOL Rank 6 Picture PH,KOL
+0,10,KOL,20,Picture Placeholder 14,KOL Rank 7 Picture PH,KOL
+0,10,KOL,21,Picture Placeholder 14,KOL Rank 8 Picture PH,KOL
+0,10,KOL,22,Picture Placeholder 14,KOL Rank 9 Picture PH,KOL
+0,10,KOL,23,Picture Placeholder 14,KOL Rank 10 Picture PH,KOL
+0,11,End,4,Slide Number Placeholder 5,Slide Number PH,Deck_End
+0,12,blank,0,Title 1,Title PH,blank_slide
+0,12,blank,4,Slide Number Placeholder 5,Slide Number PH,blank_slide
+0,12,blank,10,Text Placeholder 5,Footnote PH,blank_slide
