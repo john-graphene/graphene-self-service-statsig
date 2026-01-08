@@ -5,7 +5,8 @@ import math
 import numpy as np
 import io
 from barebones_ver2_ss import main_execute
-
+import warnings
+warnings.filterwarnings('ignore')
 
 
 # @st.cache_data
