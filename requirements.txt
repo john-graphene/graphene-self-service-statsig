@@ -1,3 +1,4 @@
+pywin32==311
 aiofiles==0.6.0
 asttokens==2.4.0
 backcall==0.2.0
