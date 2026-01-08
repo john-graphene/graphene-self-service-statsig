@@ -162,41 +162,43 @@ def find_largest_and_second_largest(numbers_list):
 
     return largest, second_largest
 
-def find_threshold(number,base=None):
-
+def find_threshold(number,base=None, statsig_type=""):
+    statsig_factor = 1.25
+    if statsig_type == "PoP":
+        statsig_factor = 1
     if ((type(number) == str) or (number is None)):
         return "Error"
     elif (base==None) or (base>1100):
         if number>45:
-            return (4.1*1.25)
+            return (4.1*statsig_factor)
         elif number >30:
-            return (1.76*1.25)
+            return (1.76*statsig_factor)
         elif number >15:
-            return (0.98*1.25)
+            return (0.98*statsig_factor)
         elif number > 0:
-            return (0.56*1.25)
+            return (0.56*statsig_factor)
         else:
             return "Error"
     elif (base>750):
         if number>45:
-            return (4.7*1.25)
+            return (4.7*statsig_factor)
         elif number >30:
-            return (2.21*1.25)
+            return (2.21*statsig_factor)
         elif number >15:
-            return (1.73*1.25)
+            return (1.73*statsig_factor)
         elif number > 0:
-            return (0.97*1.25)
+            return (0.97*statsig_factor)
         else:
             return "Error"
     elif (base>300):
         if number>45:
-            return (6.3*1.25)
+            return (6.3*statsig_factor)
         elif number >30:
-            return (3.22*1.25)
+            return (3.22*statsig_factor)
         elif number >15:
-            return (2.2*1.25)
+            return (2.2*statsig_factor)
         elif number > 0:
-            return (1.23*1.25)
+            return (1.23*statsig_factor)
         else:
             return "Error"
     else:
@@ -380,7 +382,7 @@ def multi_select_and_df(df1,tab=st):
             dataframe_show.write(":white_frowning_face: Please select at least 1 segment from the Segment list")
 
 
-def apply_statsig(df_pivot,selected_statsig_type,base,first_col=2):
+def apply_statsig(df_pivot,selected_statsig_type,base,first_col=1):
     def max_logic(row,format,first_col):
         values=row[first_col:]
         highlight=None
@@ -407,8 +409,8 @@ def apply_statsig(df_pivot,selected_statsig_type,base,first_col=2):
 
         return return_list
     def benchmark_logic(row,sup_format,inf_format,first_col):
-        benchmark=row[first_col]
-        values=row[first_col+1:]
+        benchmark=row.iloc[first_col]
+        values=row.iloc[first_col+1:]
         return_list=[0]*(first_col+1) ## Indexes and benchmark column 
         format_return_list=[]
         for value in values:
@@ -433,13 +435,45 @@ def apply_statsig(df_pivot,selected_statsig_type,base,first_col=2):
                 format_return_list.append(inf_format)
   
         return format_return_list
-    
+    def pop_logic(row, sup_format, inf_format, first_col):
+        values=row[first_col:]
+        return_list = [0] * (first_col)  ## Indexes and benchmark column
+        format_return_list = []
+        for idx, current_value in enumerate(values):
+            previous_value = values.iloc[idx-1]
+            diff = ((current_value - previous_value) / previous_value) * 100
+            threshold = find_threshold(previous_value, base, statsig_type="PoP")
+            if threshold == "Error":
+                return_list.append(0)
+            elif ((type(current_value) == str) or (type(previous_value) == str)):  ## to handle when either value is "-"
+                return_list.append(0)
+            elif diff > threshold:
+                return_list.append(1)
+            elif diff < -threshold:
+                return_list.append(-1)
+            else:
+                return_list.append(0)
+
+        for value in return_list:
+            if value == 0:
+                format_return_list.append("")
+            elif value == 1:
+                format_return_list.append(inf_format)
+            elif value == -1:
+                format_return_list.append(sup_format)
+
+        return format_return_list
   
 
     if selected_statsig_type=="Max":
         df_pivot=df_pivot.style.apply(lambda x:max_logic(x,'color: green;background-color:lightgreen',first_col),axis=1)
     elif selected_statsig_type=="Benchmark":
         df_pivot=df_pivot.style.apply(lambda x:benchmark_logic(x,'color: red;background-color:pink','color: green;background-color:lightgreen',first_col),axis=1)
+    elif selected_statsig_type=="Benchmark (Inverse)":
+        df_pivot=df_pivot.style.apply(lambda x:benchmark_logic(x,'color: green;background-color:lightgreen','color: red;background-color:pink',first_col),axis=1)
+    elif selected_statsig_type=="PoP":
+        df_pivot=df_pivot.style.apply(lambda x:pop_logic(x,'color: red;background-color:pink','color: green;background-color:lightgreen',first_col),axis=1)
+
 
 
         
@@ -452,15 +486,24 @@ def empty_df(tab=st):
     num_columns = 20
 
     columns =["Content"] + ["Segment/Brand {}".format(i) for i in range(1, num_columns+1)]
-    df = pd.DataFrame(index=range(num_rows), columns=columns)
+    df = pd.DataFrame(index=range(1,num_rows+1), columns=columns)
     updated_df=tab.data_editor(df)
     return updated_df
 
+
+def empty_pop_df(tab=st):
+    num_rows = 30
+    num_columns = 8
+
+    columns =["Content"] + ["Period {}".format(i) for i in range(1, num_columns+1)]
+    df = pd.DataFrame(index=range(1,num_rows+1), columns=columns)
+    updated_pop_df = tab.data_editor(df)
+    return updated_pop_df
+
+
 def statsig_tab_sel_box(tab=st):
-
-
-    sel_statsig_help="Select type of statsig, Benchmark or Max logic"
-    statsig_Type=tab.selectbox("Statsig Method",["Benchmark","Max"],help=sel_statsig_help,key=str(tab)+"_sstype")
+    sel_statsig_help="Select type of statsig, Benchmark or Max logic. Benchmark (Inverse) is same as Benchmark but to be used for when inverse stat-sig logic is needed, e.g. Negative Themes, Dissatisfiers, Barriers, etc."
+    statsig_Type=tab.selectbox("Statsig Method",["Benchmark","Max","Benchmark (Inverse)"],help=sel_statsig_help,key=str(tab)+"_sstype")
 
     base_tooltip="Pls input No_of_People from Base sheet for the overall base selected (when Brand=All and Segment is largest possible segment group),e.g. Segment=\"Consumers using laxatives\" instead of Segment=\"Consumers using natural laxatives\""
     
@@ -474,6 +517,20 @@ def statsig_tab_sel_box(tab=st):
 
     return statsig_Type,base
 
+
+def pop_statsig_tab_sel_box(tab=st):
+    base_tooltip="Pls input No_of_People from Base sheet for the previous period. Pls adjust according to desired period-on-period of comparison, i.e. Period 3 vs Period 2."
+
+    base_dict = {301: ">300", 751: "> 750", 1101: "> 1100"}
+    def format_func(option):
+        return base_dict[option]
+    pop_base = tab.selectbox("Previous Period Base (Overall Segment with Brand = All)", options=list(base_dict.keys()), format_func=format_func,help=base_tooltip, key="PoP_base")
+
+    # base=tab.number_input("Base (Overall Segment with Brand = All)",301,10000,1200,50,help=base_tooltip,key=str(tab)+"_base")
+
+    return pop_base
+
+
 def statsig_tab_highlight(updated_df,ss_type,base,tab=st):
 
     #   Convert selected columns to float
@@ -482,16 +539,13 @@ def statsig_tab_highlight(updated_df,ss_type,base,tab=st):
     # updated_df[columns_to_convert] = updated_df[columns_to_convert].astype(float)
 
     for column in updated_df.columns[1:]:
-
         updated_df[column] = pd.to_numeric(updated_df[column].str.replace('%', ''), errors='coerce')
 
-    updated_df=apply_statsig(updated_df,ss_type,base,first_col=1)
+    updated_df = apply_statsig(updated_df, ss_type, base, first_col=1)
 
-#   Chane from 1 dp to no dp
+#   Change from 1 dp to no dp
     updated_df = updated_df.format(precision=1, na_rep='-')
     # updated_df = updated_df.format(precision=0, na_rep='-')
-
-
     return updated_df
 
 
@@ -519,6 +573,8 @@ def dande_statsig_select(df,segment,tab=st):
     
 
     return selected_statsig_type,benchmark_target,base
+
+
 def dande_segment(df,tab=st):
     for segment in df["Segment"].unique():
         tab.subheader(segment)
@@ -557,23 +613,31 @@ def dande_segment(df,tab=st):
 
     pass
 
+
 def app():
     st.title('Self service Statistical Significance app')
     # allow_cors()
 
     global buffer
     buffer = io.BytesIO()
-    statsig_tab,pop_tab=st.tabs(["Statistical Significant",'PoP Statistical Significant'])
+    statsig_tab, pop_tab = st.tabs(["Statistical Significant", 'PoP Statistical Significant'])
 
     ## Statsig _tab
     statsig_tab.write("If **Benchmark** is the selected statsig method, **first column** would be assumed to be the benchmark value")
-    updated_df=empty_df(statsig_tab)
-    ss_type,base=statsig_tab_sel_box(statsig_tab)
-    applied_df=statsig_tab_highlight(updated_df,ss_type,base,statsig_tab)
+    updated_df = empty_df(statsig_tab)
+    ss_type, base = statsig_tab_sel_box(statsig_tab)
+    applied_df = statsig_tab_highlight(updated_df, ss_type, base, statsig_tab)
     statsig_tab.subheader("Results")
     statsig_tab.dataframe(applied_df)
-    pop_tab.subheader("Work in progress")
-    output_pptx(updated_df,statsig=ss_type,base=base,tab=statsig_tab)
+    ## PoP tab
+    pop_tab.write("Input **Content** in the first column, and available periods data in chronological order.")
+    updated_pop_df = empty_pop_df(pop_tab)
+    pop_base = pop_statsig_tab_sel_box(pop_tab)
+    applied_pop_df = statsig_tab_highlight(updated_pop_df, "PoP", pop_base, pop_tab)
+    pop_tab.subheader("Results")
+    pop_tab.dataframe(applied_pop_df)
+
+    output_pptx(updated_df, statsig=ss_type, base=base, tab=statsig_tab)
 
     # ## D&E _tab
     # df2,f2=input(dande_tab,sheet_name="Drivers")
