@@ -14,6 +14,8 @@ warnings.filterwarnings('ignore')
 # @st.cache_data()
 # @st.cache_resource(experimental_allow_widgets=True)
 
+st.set_page_config(page_title="Self-service Stat-Sig", page_icon="🩻")
+
 def process_file(file):
     if file is not None:
         file_ext=os.path.splitext(file.name)[1]
