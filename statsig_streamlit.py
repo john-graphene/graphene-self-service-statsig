@@ -639,7 +639,7 @@ def app():
     pop_tab.subheader("Results")
     pop_tab.dataframe(applied_pop_df)
 
-    output_pptx(updated_df, statsig=ss_type, base=base, tab=statsig_tab)
+    # output_pptx(updated_df, statsig=ss_type, base=base, tab=statsig_tab)
 
     # ## D&E _tab
     # df2,f2=input(dande_tab,sheet_name="Drivers")
