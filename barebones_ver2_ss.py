@@ -16,7 +16,7 @@ from pptx.chart.data import CategoryChartData, ChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION, XL_LABEL_POSITION, XL_TICK_MARK, XL_MARKER_STYLE
 from pptx.enum.shapes import MSO_SHAPE, MSO_AUTO_SHAPE_TYPE
 from pptx.oxml.xmlchemy import OxmlElement
-from docx import Document
+# from docx import Document
 """""""""""""""""""""""""""""""""""""""  Inputs """""""""""""""""""""""""""""""""""""""""""""
 
 ## REVISED GLOBAL VARS, PENDING FRONTEND INTEGRATION
