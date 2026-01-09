@@ -546,8 +546,8 @@ def statsig_tab_highlight(updated_df,ss_type,base,tab=st):
     updated_df = apply_statsig(updated_df, ss_type, base, first_col=1)
 
 #   Change from 1 dp to no dp
-    updated_df = updated_df.format(precision=1, na_rep='-')
-    # updated_df = updated_df.format(precision=0, na_rep='-')
+#     updated_df = updated_df.format(precision=1, na_rep='-')
+    updated_df = updated_df.format(precision=0, na_rep='-')
     return updated_df
 
 
@@ -639,7 +639,7 @@ def app():
     pop_tab.subheader("Results")
     pop_tab.dataframe(applied_pop_df)
 
-    # output_pptx(updated_df, statsig=ss_type, base=base, tab=statsig_tab)
+    output_pptx(updated_df, statsig=ss_type, base=base, tab=statsig_tab)
 
     # ## D&E _tab
     # df2,f2=input(dande_tab,sheet_name="Drivers")
