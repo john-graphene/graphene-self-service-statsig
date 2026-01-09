@@ -14,8 +14,6 @@ warnings.filterwarnings('ignore')
 # @st.cache_data()
 # @st.cache_resource(experimental_allow_widgets=True)
 
-st.set_page_config(page_title="Self-service Stat-Sig", page_icon="🩻")
-
 def process_file(file):
     if file is not None:
         file_ext=os.path.splitext(file.name)[1]
@@ -665,6 +663,7 @@ def app():
     #     return
 
 if __name__ == '__main__':
-    st.set_page_config(page_title="Self Service statsig", page_icon=":chart_with_upwards_trend:", layout="wide")
-    
+    # st.set_page_config(page_title="Self Service statsig", page_icon=":chart_with_upwards_trend:", layout="wide")
+    st.set_page_config(page_title="Self-service statsig", page_icon="🩻", layout="wide")
+
     app()
