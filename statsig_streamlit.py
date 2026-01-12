@@ -12,7 +12,7 @@ warnings.filterwarnings('ignore')
 # @st.cache_data
 # @st.cache(allow_output_mutation=True)
 # @st.cache_data()
-@st.cache_resource(experimental_allow_widgets=True)
+@st.cache_resource()
 
 def process_file(file):
     if file is not None:
