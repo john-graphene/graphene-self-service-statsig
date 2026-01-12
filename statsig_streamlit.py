@@ -12,7 +12,7 @@ warnings.filterwarnings('ignore')
 # @st.cache_data
 # @st.cache(allow_output_mutation=True)
 # @st.cache_data()
-# @st.cache_resource(experimental_allow_widgets=True)
+@st.cache_resource(experimental_allow_widgets=True)
 
 def process_file(file):
     if file is not None:
@@ -210,7 +210,7 @@ def find_threshold(number,base=None, statsig_type=""):
 
 
     
-def output(df,name=None,tab=None):
+def output(df,base,name=None,tab=None):
     with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
         df.to_excel(writer, index=False,na_rep="-")           
     
@@ -237,12 +237,12 @@ def output(df,name=None,tab=None):
             )
 
            
-def output_pptx(df,statsig="max",base=1200,name=None,tab=None):
+def output_pptx(df,decimal_place, statsig="max",base=1200,name=None,tab=None):
     df=df.dropna(how='all')
     df = df.dropna(axis=1, how='all')
 
     statsig=statsig.lower()
-    buffer = main_execute(df,statsig,base,"Segment/Brand 1")
+    buffer = main_execute(df,statsig,base,decimal_place)
     if name==None:
         try:
             name=selected_cat[:10]+"_"+selected_subcat[:10]+"_"+selected_country[:3]+"_"+selected_type+" - "+ selected_subtype[0] + "_"+ selected_split + "_"+ selected_statsig_type+"_"+str(base) + ".pptx"
@@ -374,7 +374,7 @@ def multi_select_and_df(df1,tab=st):
           ## To fill "" with "-" for output
         # df_pivot = df_pivot.applymap(lambda x: st.write(x))
 
-        output(df_pivot,tab=dataframe_show)
+        output(df_pivot,base,tab=dataframe_show)
     except Exception as Esc:
         if ((not df_pivot.empty) and (len(selected_segment) >=1)):
 
@@ -533,7 +533,13 @@ def pop_statsig_tab_sel_box(tab=st):
     return pop_base
 
 
-def statsig_tab_highlight(updated_df,ss_type,base,tab=st):
+def set_decimal_place_box(tab=st, key=str):
+    dp_tooltip = "Choose desired number of decimal places. If 0 selected, will only return whole numbers."
+    dp = tab.selectbox("Select desired decimal places.", options=range(0,3), help=dp_tooltip, key=key)
+    return dp
+
+
+def statsig_tab_highlight(updated_df,ss_type,base,decimal_place, tab=st):
 
     #   Convert selected columns to float
     # columns_to_convert = updated_df.columns[1:]
@@ -547,7 +553,8 @@ def statsig_tab_highlight(updated_df,ss_type,base,tab=st):
 
 #   Change from 1 dp to no dp
 #     updated_df = updated_df.format(precision=1, na_rep='-')
-    updated_df = updated_df.format(precision=0, na_rep='-')
+#     updated_df = updated_df.format(precision=0, na_rep='-')
+    updated_df = updated_df.format(precision=decimal_place, na_rep='-')
     return updated_df
 
 
@@ -611,7 +618,7 @@ def dande_segment(df,tab=st):
         updated_df=apply_statsig(df_pivot,dande_seleceted_statsig,base,first_col=2)
 
         tab.dataframe(updated_df)
-        output(updated_df,name="D&E_"+segment+"xlsx",tab=tab)
+        output(updated_df,base,name="D&E_"+segment+"xlsx",tab=tab)
 
     pass
 
@@ -628,18 +635,24 @@ def app():
     statsig_tab.write("If **Benchmark** is the selected statsig method, **first column** would be assumed to be the benchmark value")
     updated_df = empty_df(statsig_tab)
     ss_type, base = statsig_tab_sel_box(statsig_tab)
-    applied_df = statsig_tab_highlight(updated_df, ss_type, base, statsig_tab)
-    statsig_tab.subheader("Results")
-    statsig_tab.dataframe(applied_df)
+    statsig_placeholder = statsig_tab.container()
+    decimal_place = set_decimal_place_box(statsig_tab, key="decimal_place_box")
+    applied_df = statsig_tab_highlight(updated_df, ss_type, base, decimal_place, statsig_tab)
+    with statsig_placeholder:
+        st.subheader("Results")
+        st.dataframe(applied_df)
+    output_pptx(updated_df, decimal_place=decimal_place, statsig=ss_type, base=base, tab=statsig_tab)
     ## PoP tab
     pop_tab.write("Input **Content** in the first column, and available periods data in chronological order.")
     updated_pop_df = empty_pop_df(pop_tab)
     pop_base = pop_statsig_tab_sel_box(pop_tab)
-    applied_pop_df = statsig_tab_highlight(updated_pop_df, "PoP", pop_base, pop_tab)
-    pop_tab.subheader("Results")
-    pop_tab.dataframe(applied_pop_df)
+    pop_placeholder = pop_tab.container()
+    pop_decimal_place = set_decimal_place_box(pop_tab, key="PoP_decimal_place_box")
+    applied_pop_df = statsig_tab_highlight(updated_pop_df, "PoP", pop_base, pop_decimal_place, pop_tab)
+    with pop_placeholder:
+        st.subheader("Results")
+        st.dataframe(applied_pop_df)
 
-    output_pptx(updated_df, statsig=ss_type, base=base, tab=statsig_tab)
 
     # ## D&E _tab
     # df2,f2=input(dande_tab,sheet_name="Drivers")

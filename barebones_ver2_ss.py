@@ -1149,7 +1149,7 @@ def get_table_format(slide_df, table_config_json, brief_doc_path=""):
     return table_format_dict[slide_type]
 
 
-def fill_table_data(slide, slide_df, slide_master_df,base=None):
+def fill_table_data(slide, slide_df, decimal_place,base=None):
     """
         Fill Table Placeholders with required inputs //
         Apply table formatting //
@@ -1214,11 +1214,16 @@ def fill_table_data(slide, slide_df, slide_master_df,base=None):
                                         pass
                                 if cell_index == r:
                                     
-                                    cell_value = slide_df[f'Segment/Brand {r}'].astype(str).iloc[row_index - 2]
+                                    cell_value = slide_df[f'Segment/Brand {r}'].iloc[row_index - 2]
                                   
                                     if cell_value == 'nan':
                                         cell.text = "-"
                                     else:
+                                        cell_value = cell_value.round(decimal_place)
+                                        if decimal_place == 0:
+                                            cell_value = str(int(cell_value))
+                                        else:
+                                            cell_value = str(cell_value)
                                         cell.text = cell_value  ## to adjust
 
 
@@ -1352,7 +1357,7 @@ def set_cell_statsig_colour(cell, colour):
                 run.font.color.rgb = RED
 
 
-def apply_stat_sig(slide, slide_df,statsig_type,base):
+def apply_stat_sig(slide, statsig_type, base):
     """
         Max Stat-sig: Compare data points of cross segments to get diff between 1st/2nd largest and determine stat-significance of largest value. //
         Benchmark Stat-sig: Compare each data point to ref benchmark value to determine stat-superior/inferior of benchmark value against other value. //
@@ -1496,7 +1501,7 @@ def apply_stat_sig(slide, slide_df,statsig_type,base):
 """""""""""""""""""""""""""""""""""""""  Execute Functions """""""""""""""""""""""""""""""""""""""""""""
 
 
-def main_execute(df,statsig_type,base,ref_benchmark):
+def main_execute(df,statsig_type,base,decimal_place):
     """
         Execute all functions to generate sequential data dict and PPT slide sequence with text/table inputs //
         Print for each slide added //
@@ -1514,8 +1519,8 @@ def main_execute(df,statsig_type,base,ref_benchmark):
     new_slide = prs.slides.add_slide(prs.slide_layouts[temp_slide_layout_index])
     # print(f"{slide_key} slide added using {new_slide.slide_layout.name}")
     # fill_text_data(new_slide, df, slide_master_df)
-    fill_table_data(new_slide, df, slide_master_df,base=base)
-    apply_stat_sig (new_slide, df,statsig_type,base)
+    fill_table_data(new_slide, df, decimal_place, base=base)
+    apply_stat_sig(new_slide, statsig_type, base)
     # if 'Statsig_Type' in slide_df.columns:
     #     apply_stat_sig(new_slide, slide_df)
 
