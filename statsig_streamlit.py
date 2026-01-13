@@ -374,7 +374,7 @@ def multi_select_and_df(df1,tab=st):
                 if len(selected_subtype) >= 1:
                     split_list.write("<span style='font-size:20px;padding-left: 5px;'> :exclamation: :exclamation:  Pivot Error :exclamation:  :exclamation: </span>", unsafe_allow_html=True)
                 else:
-                     split_list.write(":white_frowning_face: Please select 1 or more subtype")
+                     split_list.write("🙁 Please select 1 or more subtype")
         # df_pivot=df_pivot.drop(columns=["Country","Category","Subcategory","Type","Subtype"])
         df_pivot=df_pivot.drop(columns=["PeriodKey","Country","Category","Subcategory","Segment","Brand"], errors='ignore')
         # df_pivot_cols = ['Type','Subtype','Content',benchmark_target] + shortlist_brand_segment
@@ -405,7 +405,7 @@ def multi_select_and_df(df1,tab=st):
             dataframe_show.write("<span style='font-size:20px;padding-left: 10px;'> :exclamation: :exclamation:  DATA ERROR :exclamation:  :exclamation: </span>", unsafe_allow_html=True)
             dataframe_show.write(Esc)
         else:
-            dataframe_show.write(":white_frowning_face: Please contact DS for help.")
+            dataframe_show.write("🙁 Please contact DS for help.")
 
 
 def apply_statsig(df_pivot,selected_statsig_type,base,first_col=1):
