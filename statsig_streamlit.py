@@ -25,7 +25,7 @@ def process_file(file):
         return df
 
 
-def input(tab=st,sheet_name="Performance"):
+def get_file_input(tab=st,sheet_name="Performance"):
     """ Input """
 
     global f2
@@ -239,7 +239,7 @@ def output(df,base,name=None,tab=None):
             )
 
            
-def output_pptx(df,decimal_place, statsig="max",base=1200,name=None,tab=None):
+def gen_output_pptx(df,decimal_place, statsig="max",base=1200,name=None,tab=None):
     df=df.dropna(how='all')
     df = df.dropna(axis=1, how='all')
 
@@ -666,7 +666,7 @@ def dande_tab_execute(df,tab=st):
         updated_df=apply_statsig(df_pivot,dande_selected_statsig,base,first_col=2)
 
         tab.dataframe(updated_df, hide_index=True)
-        output(updated_df,base,name="D&E_"+segment+"xlsx",tab=tab)
+        output(updated_df,base,name="DriversEquity_"+segment+".xlsx",tab=tab)
 
 
 def app():
@@ -687,7 +687,7 @@ def app():
     with statsig_placeholder:
         st.subheader("Results")
         st.dataframe(applied_df)
-    output_pptx(updated_df, decimal_place=decimal_place, statsig=ss_type, base=base, tab=statsig_tab)
+    gen_output_pptx(updated_df, decimal_place=decimal_place, statsig=ss_type, base=base, tab=statsig_tab)
     ## PoP tab
     pop_tab.write("Input **Content** in the first column, and available periods data in chronological order.")
     updated_pop_df = empty_pop_df(pop_tab)
@@ -701,14 +701,14 @@ def app():
 
 
     ## D&E _tab
-    df2,f2=input(dande_tab,sheet_name="Drivers")
+    df2,f2=get_file_input(dande_tab,sheet_name="Drivers")
     if f2 is not None:
         # dande_segment(df2,dande_tab)
         dande_tab_execute(df2,dande_tab)
 
 
     # # Performance tab
-    # df1,f1=input(fixed_tab)
+    # df1,f1=get_file_input(fixed_tab)
 
 
     # if f1 is not None:
@@ -724,6 +724,6 @@ def app():
 
 if __name__ == '__main__':
     # st.set_page_config(page_title="Self Service statsig", page_icon=":chart_with_upwards_trend:", layout="wide")
-    st.set_page_config(page_title="Self-service statsig", page_icon="🩻", layout="wide")
+    st.set_page_config(page_title="Self-service statsig", page_icon="📊", layout="wide")
 
     app()
