@@ -72,9 +72,11 @@ def get_file_input(tab=st,sheet_name="Performance"):
 
     return df1,f1
 
+
 def get_unique(df1):
-    global cat_list,subcat_list,country_list,type_list,subtype_list,brand_list_segment_list
+    global periodkey_list,cat_list,subcat_list,country_list,type_list,subtype_list,brand_list_segment_list
     # unique_list=list(df[unique_col].unique())
+    periodkey_list=list(df1["PeriodKey"].unique())
     cat_list=list(df1["Category"].unique())
     subcat_list=list(df1["Subcategory"].unique())
     country_list=list(df1["Country"].unique())
@@ -100,44 +102,59 @@ def get_benchmark(df_local,split,types):
         return df_local[(df_local["Type"]==selected_type) & (df_local["Subtype"].isin(selected_subtype))]["Segment"].unique()
 
  
-def select_box(df_local,tab=st):
-    global selected_cat,selected_subcat,selected_country
+def performance_select_box(df_local,tab=st):
+    global selected_cat,selected_subcat,selected_country,selected_segment,selected_brand
     global selected_type,selected_subtype,selected_split,unique_split,selected_statsig_type,benchmark_target
     tab.subheader("Filter data")
-    sel_cat,sel_subcat,sel_country=tab.columns(3)
 
+    sel_periodkey_help = "Select PeriodKey to be filtered to"
     sel_cat_help="Select Category to be filtered to"
     sel_subcat_help="Select Subcategory to be filtered to"
     sel_cty_help="Select Country to be filtered to"
     sel_type_help="Select Type to be filtered to"
-    sel_subtype_help="Select Subtype to be filtered to"
     sel_split_help="Select comparison type, cross segment or cross brand comparison"
+    sel_subtype_help="Select Subtype to be filtered to"
     sel_statsig_help="Select type of statsig, Benchmark or Max logic"
     sel_benchmark_help="Select Benchmark Brand/Segment (Appicable to Statsig method = benchmark only)"
 
 
-    selected_cat=sel_cat.selectbox("Category",cat_list,help=sel_cat_help)
-    selected_subcat=sel_subcat.selectbox("Subcategory",df_local[df_local["Category"]==selected_cat]["Subcategory"].unique(),help=sel_subcat_help)
-    selected_country=sel_country.selectbox("Country",df_local[(df_local["Category"]==selected_cat) & (df_local["Subcategory"]==selected_subcat)]["Country"].unique(),help=sel_cty_help)
+    sel_periodkey,sel_cat,sel_subcat,sel_country=tab.columns(4)
+    selected_periodkey=sel_periodkey.selectbox("PeriodKey",periodkey_list,help=sel_periodkey_help)
+    selected_cat=sel_cat.selectbox("Category",df_local[df_local["PeriodKey"]==selected_periodkey]["Category"].unique(),help=sel_cat_help)
+    selected_subcat=sel_subcat.selectbox("Subcategory",df_local[(df_local["PeriodKey"]==selected_periodkey) & (df_local["Category"]==selected_cat)]["Subcategory"].unique(),help=sel_subcat_help)
+    selected_country=sel_country.selectbox("Country",df_local[(df_local["PeriodKey"]==selected_periodkey) & (df_local["Category"]==selected_cat) & (df_local["Subcategory"]==selected_subcat)]["Country"].unique(),help=sel_cty_help)
 
-    df_local=df_local[(df_local["Category"]==selected_cat) & (df_local["Subcategory"]==selected_subcat) &  (df_local["Country"]==selected_country)]
+    df_local = df_local[(df_local["PeriodKey"] == selected_periodkey) & (df_local["Category"] == selected_cat) & (df_local["Subcategory"] == selected_subcat) & (df_local["Country"] == selected_country)]
 
-
-    sel_type,sel_subtype,sel_split=tab.columns(3)
-
+    sel_type,sel_subtype=tab.columns(2)
     selected_type=sel_type.selectbox("Type",type_list,help=sel_type_help)
     # selected_subtype=sel_subtype.selectbox("Subtype",df_local[df_local["Type"]==selected_type]["Subtype"].unique(),help=sel_subtype_help)
     selected_subtype=sel_subtype.multiselect("Subtype",df_local[df_local["Type"]==selected_type]["Subtype"].unique(),help=sel_subtype_help)
 
-    # selected_split=sel_split.selectbox("Split",split_list,help=sel_split_help)
-    selected_split="Segment"
+    df_local = df_local[(df_local["Type"]==selected_type) & (df_local["Subtype"].isin(selected_subtype))]
+    shortlist_segment_list = [None] + list(df_local['Segment'].unique())
+    shortlist_brand_list = [None] + list(df_local['Brand'].unique())
 
-    statsig_type,bencmark_target,empty=tab.columns(3)
-    selected_statsig_type=statsig_type.selectbox("Statsig Method",["Benchmark","Max"],help=sel_statsig_help)
-    benchmark_target=bencmark_target.selectbox("Benchmark",get_benchmark(df_local,selected_split,selected_statsig_type),help=sel_benchmark_help)
-    
+    statsig_split,sel_segment,sel_brand = tab.columns(3)
+    selected_split=statsig_split.selectbox("Segment or Brand Comparison",["Segment","Brand"],help=sel_split_help)
+    if selected_split=="Segment":
+        shortlist_brand_list.remove(None)
+    elif selected_split=="Brand":
+        shortlist_segment_list.remove(None)
+    selected_segment = sel_segment.selectbox("Segment",shortlist_segment_list,help="Select Segment from list.")
+    selected_brand = sel_brand.selectbox("Brand",shortlist_brand_list,help="Select Brand from list.")
+    if selected_split == "Segment":
+        df_local = df_local[(df_local['Brand']==selected_brand)]
+    elif selected_split == "Brand":
+        df_local = df_local[(df_local['Segment']==selected_segment)]
+
+    statsig_type, benchmark_target = tab.columns(2)
+    selected_statsig_type=statsig_type.selectbox("Statsig Method",["Benchmark","Max","Benchmark (Inverse)"],help=sel_statsig_help)
+    benchmark_target=benchmark_target.selectbox("Benchmark",get_benchmark(df_local,selected_split,selected_statsig_type),help=sel_benchmark_help)
+
     ## Find the unique list of split
     unique_split=get_benchmark(df_local,selected_split,"Benchmark")
+
     return df_local
 
 
@@ -165,6 +182,7 @@ def find_largest_and_second_largest(numbers_list):
                 second_largest = num
 
     return largest, second_largest
+
 
 def find_threshold(number,base=None, statsig_type=""):
     statsig_factor = 1.25
@@ -209,18 +227,16 @@ def find_threshold(number,base=None, statsig_type=""):
         return "Base less than 300!!"
 
 
-
-
-    
-def output(df,base,name=None,tab=None):
+def gen_output_xl(df,base,name=None,tab=None):
+    """FUTURE FUNCTIONALITY TO ADD STAT-SIG COLOUR TO XL OUTPUT"""
     with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-        df.to_excel(writer, index=False,na_rep="-")           
-    
+        df.to_excel(writer, index=False,na_rep="-")
         # Close the Pandas Excel writer and output the Excel file to the buffer
         writer.close()
         if name==None:
             try:
-                name=selected_cat[:10]+"_"+selected_subcat[:10]+"_"+selected_country[:3]+"_"+selected_type+" - "+ selected_subtype[0] + "_"+ selected_split + "_"+ selected_statsig_type+"_"+str(base) + ".xlsx"
+                name=selected_type+" - "+ selected_subtype[0] + "_"+ selected_split + "_"+ selected_statsig_type+".xlsx"
+                # name=selected_cat[:10]+"_"+selected_subcat[:10]+"_"+selected_country[:3]+"_"+selected_type+" - "+ selected_subtype[0] + "_"+ selected_split + "_"+ selected_statsig_type+"_"+str(base) + ".xlsx"
             except:
                 name="default.xlsx"
         if tab==None:
@@ -238,7 +254,7 @@ def output(df,base,name=None,tab=None):
                 mime="application/vnd.ms-excel"
             )
 
-           
+
 def gen_output_pptx(df,decimal_place, statsig="max",base=1200,name=None,tab=None):
     df=df.dropna(how='all')
     df = df.dropna(axis=1, how='all')
@@ -250,30 +266,28 @@ def gen_output_pptx(df,decimal_place, statsig="max",base=1200,name=None,tab=None
             name=selected_cat[:10]+"_"+selected_subcat[:10]+"_"+selected_country[:3]+"_"+selected_type+" - "+ selected_subtype[0] + "_"+ selected_split + "_"+ selected_statsig_type+"_"+str(base) + ".pptx"
         except:
             name="default.pptx"
-
     if tab==None:
         tab = st
-
-
 
     tab.download_button(
         label="Download PPT",
         data=buffer,
         file_name=name
-
     )
 
 
 def multi_select_and_df(df1,tab=st):
+    global selected_type,selected_subtype,selected_split,unique_split,selected_statsig_type,benchmark_target
     # global base,dataframe_show,df_pivot
-    split_list, dataframe_show = tab.columns([1, 3])
+    # split_list, dataframe_show = tab.columns([1, 3])
+    split_list, dataframe_show = tab.columns([1, 2])
     
     ### Multi select
     i=1
-    selected_segment=[]
+    shortlist_brand_segment=[]
 
-    split_list.header("Segment List")
-    # split_list.header("Segment/Brand List")
+    # split_list.subheader("Segment List")
+    split_list.subheader("Segment/Brand List")
 
     base_tooltip="Pls input No_of_People from Base sheet for the overall base selected (when Brand=All and Segment is largest possible segment group),e.g. Segment=\"Consumers using laxatives\" instead of Segment=\"Consumers using natural laxatives\""
     base_dict = {301: ">300", 751: "> 750", 1101: "> 1100"}
@@ -282,71 +296,76 @@ def multi_select_and_df(df1,tab=st):
 
     base = split_list.selectbox("Base", options=list(base_dict.keys()), format_func=format_func,help=base_tooltip)
     # base=split_list.number_input("Base",301,10000,1200,50,help=base_tooltip)
-    if selected_statsig_type=="Benchmark":
-
-        for seg_brand in unique_split:
-            if seg_brand!=benchmark_target:
-                seg_chekced=split_list.checkbox(seg_brand,key="seg_brand"+str(i))
-                i=i+1
-                if seg_chekced:
-                    selected_segment.append(seg_brand)
-    else:
-        for seg_brand in unique_split:
-            seg_chekced=split_list.checkbox(seg_brand,key="seg_brand"+str(i))
-            i=i+1
-            if seg_chekced:
-                selected_segment.append(seg_brand)
-
+    for seg_brand_segment in unique_split:
+        if ("Benchmark" in selected_statsig_type)&(seg_brand_segment==benchmark_target):
+            continue
+        seg_brand_checked=split_list.checkbox(seg_brand_segment,key="seg_brand_segment"+str(i))
+        i=i+1
+        if seg_brand_checked:
+            shortlist_brand_segment.append(seg_brand_segment)
+    # if "Benchmark" in selected_statsig_type:
+    #
+    #     for seg_brand_segment in unique_split:
+    #         if seg_brand_segment!=benchmark_target:
+    #             seg_brand_checked=split_list.checkbox(seg_brand_segment,key="seg_brand_segment"+str(i))
+    #             i=i+1
+    #             if seg_brand_checked:
+    #                 shortlist_brand_segment.append(seg_brand_segment)
+    # else:
+    #     for seg_brand_segment in unique_split:
+    #         seg_brand_checked=split_list.checkbox(seg_brand_segment,key="seg_brand_segment"+str(i))
+    #         i=i+1
+    #         if seg_brand_checked:
+    #             shortlist_brand_segment.append(seg_brand_segment)
 
     ### Multi select
-    dataframe_show.header("Statistical Significance table")
-    ## Index
-    index=list(df1.columns)
-    index.remove("Measure Value")
-
-
-    index.remove(selected_split)
-
-    # index.remove("No_of_People")
-
-    index.remove("Subtype")
-
+    dataframe_show.subheader("Statistical Significance table")
+    ## Column list (Index)
+    col_list=list(df1.columns)
+    # col_list.remove("Measure Value")
+    # col_list.remove(selected_split)
+    # # col_list.remove("No_of_People")
+    # col_list.remove("Subtype")
+    remove_list = ["Measure Value", selected_split]
+    col_list = [col for col in col_list if col not in remove_list]
 
     ## Filter df
-    if selected_statsig_type!="Benchmark":
+    if selected_statsig_type=="Max":
         if selected_split=="Brand":
-            filtered_df=df1[(df1["Type"]==selected_type) & (df1["Subtype"].isin(selected_subtype))& (df1["Brand"].isin(selected_segment))]
+            filtered_df=df1[(df1["Type"]==selected_type) & (df1["Subtype"].isin(selected_subtype)) & (df1["Brand"].isin(shortlist_brand_segment))]
         elif selected_split=="Segment":
-                filtered_df=df1[(df1["Type"]==selected_type) & (df1["Subtype"].isin(selected_subtype))& (df1["Segment"].isin(selected_segment))]
-    else:        
+            filtered_df=df1[(df1["Type"]==selected_type) & (df1["Subtype"].isin(selected_subtype)) & (df1["Segment"].isin(shortlist_brand_segment))]
+    elif "Benchmark" in selected_statsig_type:
         if selected_split=="Brand":
-            filtered_df=df1[(df1["Type"]==selected_type) & (df1["Subtype"].isin(selected_subtype))& (df1["Brand"].isin(selected_segment+[benchmark_target]))]
+            filtered_df=df1[(df1["Type"]==selected_type) & (df1["Subtype"].isin(selected_subtype)) & (df1["Brand"].isin(shortlist_brand_segment+[benchmark_target]))]
         elif selected_split=="Segment":
-                filtered_df=df1[(df1["Type"]==selected_type) & (df1["Subtype"].isin(selected_subtype))& (df1["Segment"].isin(selected_segment+[benchmark_target]))]
+            filtered_df=df1[(df1["Type"]==selected_type) & (df1["Subtype"].isin(selected_subtype)) & (df1["Segment"].isin(shortlist_brand_segment+[benchmark_target]))]
 
     ## Pivot
-
+    df_pivot = pd.DataFrame()
     try:
         # df_pivot=filtered_df.pivot(index=index,columns=selected_split,values="Measure Value")
         # df_pivot=df_pivot.reset_index()
-        index.remove("Brand")
-        df_pivot=filtered_df.pivot(index=index,columns=selected_split,values="Measure Value")
+        # if selected_split == "Segment":
+        #     col_list.remove("Brand")
+        # elif selected_split == "Brand":
+        #     col_list.remove("Segment")
+        df_pivot=filtered_df.pivot(index=col_list,columns=selected_split,values="Measure Value")
         df_pivot=df_pivot.reset_index()
 
-        if selected_statsig_type !="Benchmark":
+        if selected_statsig_type == "Max":
             if len(selected_subtype) < 1:
                 split_list.write("Please select 1 or more subtype")
             else:
-             
                 try:
-                    df_pivot=df_pivot[index+selected_segment] ## Sort columns
+                    df_pivot=df_pivot[col_list+shortlist_brand_segment] ## Sort columns
                 except:
-                            split_list.write("<span style='font-size:20px;padding-left: 5px;'> :exclamation: :exclamation:  Pivot Error :exclamation:  :exclamation: </span>", unsafe_allow_html=True)
+                    split_list.write("<span style='font-size:20px;padding-left: 5px;'> :exclamation: :exclamation:  Pivot Error :exclamation:  :exclamation: </span>", unsafe_allow_html=True)
 
                        
-        elif selected_statsig_type=="Benchmark": 
+        elif "Benchmark" in selected_statsig_type:
             try:
-                df_pivot=df_pivot[index+[benchmark_target]+selected_segment] ## Sort columns
+                df_pivot=df_pivot[col_list+[benchmark_target]+shortlist_brand_segment] ## Sort columns
             except:
                 
                 if len(selected_subtype) >= 1:
@@ -354,11 +373,12 @@ def multi_select_and_df(df1,tab=st):
                 else:
                      split_list.write(":white_frowning_face: Please select 1 or more subtype")
         # df_pivot=df_pivot.drop(columns=["Country","Category","Subcategory","Type","Subtype"])
-        df_pivot=df_pivot.drop(columns=["Country","Category","Subcategory","Type"])
-
+        df_pivot=df_pivot.drop(columns=["PeriodKey","Country","Category","Subcategory","Segment","Brand"], errors='ignore')
+        # df_pivot_cols = ['Type','Subtype','Content',benchmark_target] + shortlist_brand_segment
+        # df_pivot = df_pivot[df_pivot_cols]
 
       
-        df_pivot_styler=apply_statsig(df_pivot,selected_statsig_type,base)
+        df_pivot_styler=apply_statsig(df_pivot,selected_statsig_type,base, first_col=3)
         df_pivot_styler_formatted = df_pivot_styler.format(precision=1, na_rep='-')
  
 
@@ -367,23 +387,22 @@ def multi_select_and_df(df1,tab=st):
 
         # df_pivot = df_pivot.fillna(None)
         ## END To fill na with "-"
-        dataframe_show.dataframe(df_pivot_styler_formatted)
+        dataframe_show.dataframe(df_pivot_styler_formatted, hide_index=True)
 
 
         # dataframe_show.write("Error")
-
-
           ## To fill "" with "-" for output
         # df_pivot = df_pivot.applymap(lambda x: st.write(x))
 
-        output(df_pivot,base,tab=dataframe_show)
+        gen_output_xl(df_pivot,base,tab=dataframe_show)
     except Exception as Esc:
-        if ((not df_pivot.empty) and (len(selected_segment) >=1)):
+        # dataframe_show.write(Esc)
+        if ((not df_pivot.empty) and (len(shortlist_brand_segment) >=1)):
 
             dataframe_show.write("<span style='font-size:20px;padding-left: 10px;'> :exclamation: :exclamation:  DATA ERROR :exclamation:  :exclamation: </span>", unsafe_allow_html=True)
             dataframe_show.write(Esc)
         else:
-            dataframe_show.write(":white_frowning_face: Please select at least 1 segment from the Segment list")
+            dataframe_show.write(":white_frowning_face: Please contact DS for help.")
 
 
 def apply_statsig(df_pivot,selected_statsig_type,base,first_col=1):
@@ -467,7 +486,6 @@ def apply_statsig(df_pivot,selected_statsig_type,base,first_col=1):
                 format_return_list.append(sup_format)
 
         return format_return_list
-  
 
     if selected_statsig_type=="Max":
         df_pivot=df_pivot.style.apply(lambda x:max_logic(x,'color: green;background-color:lightgreen',first_col),axis=1)
@@ -478,11 +496,7 @@ def apply_statsig(df_pivot,selected_statsig_type,base,first_col=1):
     elif selected_statsig_type=="PoP":
         df_pivot=df_pivot.style.apply(lambda x:pop_logic(x,'color: red;background-color:pink','color: green;background-color:lightgreen',first_col),axis=1)
 
-
-
-        
     return df_pivot
-
 
 
 def empty_df(tab=st):
@@ -626,7 +640,7 @@ def dande_statsig_select(df,tab=st,segment=str):
 #         updated_df=apply_statsig(df_pivot,dande_seleceted_statsig,base,first_col=2)
 #
 #         tab.dataframe(updated_df)
-#         output(updated_df,base,name="D&E_"+segment+"xlsx",tab=tab)
+#         gen_output_xl(updated_df,base,name="D&E_"+segment+"xlsx",tab=tab)
 #
 #     pass
 
@@ -666,7 +680,7 @@ def dande_tab_execute(df,tab=st):
         updated_df=apply_statsig(df_pivot,dande_selected_statsig,base,first_col=2)
 
         tab.dataframe(updated_df, hide_index=True)
-        output(updated_df,base,name="DriversEquity_"+segment+".xlsx",tab=tab)
+        gen_output_xl(updated_df,base,name="DriversEquity_"+segment+".xlsx",tab=tab)
 
 
 def app():
@@ -675,7 +689,7 @@ def app():
 
     global buffer
     buffer = io.BytesIO()
-    statsig_tab, pop_tab, dande_tab = st.tabs(["Statistical Significant", 'PoP Statistical Significant', "Drivers and Equity"])
+    statsig_tab, pop_tab, dande_tab, fixed_tab = st.tabs(["Statistical Significant", 'PoP Statistical Significant', "Drivers and Equity", "Performance"])
 
     ## Statsig _tab
     statsig_tab.write("If **Benchmark** is the selected statsig method, **first column** would be assumed to be the benchmark value")
@@ -707,16 +721,14 @@ def app():
         dande_tab_execute(df2,dande_tab)
 
 
-    # # Performance tab
-    # df1,f1=get_file_input(fixed_tab)
-
-
-    # if f1 is not None:
-    #     global split_list
-    #     split_list=["Segment","Brand"]
-    #     get_unique(df1)
-    #     df1=select_box(df1,fixed_tab)
-    #     multi_select_and_df(df1,fixed_tab)
+    # Performance tab
+    df1,f1=get_file_input(fixed_tab)
+    if f1 is not None:
+        global split_list
+        # split_list=["Segment","Brand"]
+        get_unique(df1)
+        df1=performance_select_box(df1,fixed_tab)
+        multi_select_and_df(df1,fixed_tab)
 
     
     # if (f1 is None):
