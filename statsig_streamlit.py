@@ -105,7 +105,7 @@ def get_benchmark(df_local,split,types):
 def performance_select_box(df_local,tab=st):
     global selected_cat,selected_subcat,selected_country,selected_segment,selected_brand
     global selected_type,selected_subtype,selected_split,unique_split,selected_statsig_type,benchmark_target
-    tab.subheader("Filter data")
+    tab.subheader("Select options below.")
 
     sel_periodkey_help = "Select PeriodKey to be filtered to"
     sel_cat_help="Select Category to be filtered to"
@@ -117,7 +117,7 @@ def performance_select_box(df_local,tab=st):
     sel_statsig_help="Select type of statsig, Benchmark or Max logic"
     sel_benchmark_help="Select Benchmark Brand/Segment (Appicable to Statsig method = benchmark only)"
 
-
+    tab.write("Step 1: Choose PeriodKey, Category, Subcategory, Country fixed filters.")
     sel_periodkey,sel_cat,sel_subcat,sel_country=tab.columns(4)
     selected_periodkey=sel_periodkey.selectbox("PeriodKey",periodkey_list,help=sel_periodkey_help)
     selected_cat=sel_cat.selectbox("Category",df_local[df_local["PeriodKey"]==selected_periodkey]["Category"].unique(),help=sel_cat_help)
@@ -126,6 +126,7 @@ def performance_select_box(df_local,tab=st):
 
     df_local = df_local[(df_local["PeriodKey"] == selected_periodkey) & (df_local["Category"] == selected_cat) & (df_local["Subcategory"] == selected_subcat) & (df_local["Country"] == selected_country)]
 
+    tab.write("Step 2: Choose Type/Subtype.")
     sel_type,sel_subtype=tab.columns(2)
     selected_type=sel_type.selectbox("Type",type_list,help=sel_type_help)
     # selected_subtype=sel_subtype.selectbox("Subtype",df_local[df_local["Type"]==selected_type]["Subtype"].unique(),help=sel_subtype_help)
@@ -135,6 +136,7 @@ def performance_select_box(df_local,tab=st):
     shortlist_segment_list = [None] + list(df_local['Segment'].unique())
     shortlist_brand_list = [None] + list(df_local['Brand'].unique())
 
+    tab.write("Step 3: Choose either Segment or Brand comparison. Whichever is chosen, keep that selection as None.")
     statsig_split,sel_segment,sel_brand = tab.columns(3)
     selected_split=statsig_split.selectbox("Segment or Brand Comparison",["Segment","Brand"],help=sel_split_help)
     if selected_split=="Segment":
@@ -148,6 +150,7 @@ def performance_select_box(df_local,tab=st):
     elif selected_split == "Brand":
         df_local = df_local[(df_local['Segment']==selected_segment)]
 
+    tab.write("Step 4: Choose type of stat-sig, and Benchmark Brand/Segment if applicable.")
     statsig_type, benchmark_target = tab.columns(2)
     selected_statsig_type=statsig_type.selectbox("Statsig Method",["Benchmark","Max","Benchmark (Inverse)"],help=sel_statsig_help)
     benchmark_target=benchmark_target.selectbox("Benchmark",get_benchmark(df_local,selected_split,selected_statsig_type),help=sel_benchmark_help)
