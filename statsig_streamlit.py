@@ -17,8 +17,8 @@ warnings.filterwarnings('ignore')
 def process_file(file):
     if file is not None:
         file_ext=os.path.splitext(file.name)[1]
-        # if file_ext==".csv":
-        #     df = pd.read_csv(file)
+        if file_ext==".csv":
+            df = pd.read_csv(file)
         if file_ext==".xlsx":
             df = pd.read_excel(file,sheet_name=None,na_values=np.nan)
 
@@ -37,7 +37,7 @@ def input(tab=st,sheet_name="Performance"):
     if sheet_name == "Performance":
         f1=left_upload.file_uploader(f":file_folder: File ({sheet_name})", type=['xlsx'], accept_multiple_files=False, key=sheet_name, help="Upload the data file sent back by Subbu", on_change=None, args=None, kwargs=None, disabled=False, label_visibility="visible")
     elif sheet_name=="Drivers":
-        f1=left_upload.file_uploader(f":file_folder: File ({sheet_name})", type=['xlsx'], accept_multiple_files=False, key=sheet_name, help="Upload the processed driver and equity file", on_change=None, args=None, kwargs=None, disabled=False, label_visibility="visible")
+        f1=left_upload.file_uploader(f":file_folder: File ({sheet_name})", type=['CSV','xlsx'], accept_multiple_files=False, key=sheet_name, help="Upload the processed driver and equity file", on_change=None, args=None, kwargs=None, disabled=False, label_visibility="visible")
     
     if f1 is not None:
         if sheet_name=="Performance":
@@ -56,14 +56,16 @@ def input(tab=st,sheet_name="Performance"):
         ## Remove Base
             # df1=performance.merge(base,how='left',on=['PeriodKey', 'Category',
         #'Subcategory', 'Country', 'Segment', 'Brand'],suffixes=("","_right"))
-            df1=df1[['Category','Subcategory','Segment', 'Country', 'Brand',
+            df1=df1[['PeriodKey','Category','Subcategory','Segment', 'Country', 'Brand',
             'Type', 'Subtype', 'Content', 'Measure Value' ]]
-        elif sheet_name=="Drivers":
+        elif "driver" in sheet_name.lower():
             df1 = process_file(f1)
-            df1 = df1[sheet_name]
+            if type(df1) == dict:
+                df1 = df1[sheet_name]
+            df1 = df1.drop(columns=['PeriodDateEnd','Month','Quarter','Year'], errors='ignore')
 
         # if tab!=None:
-        tab.write(df1)
+        tab.dataframe(df1, hide_index=True)
         # else:
         #     df1
         
@@ -558,7 +560,12 @@ def statsig_tab_highlight(updated_df,ss_type,base,decimal_place, tab=st):
     return updated_df
 
 
-def dande_statsig_select(df,segment,tab=st):
+def dande_statsig_select(df,tab=st,segment=str):
+    period_key_sel_help="Select Period from available list of Period Keys."
+    segment_sel_help="Select Segment from available list of Segments."
+    period_key_sel, segment_sel = tab.columns(2)
+    period_key = period_key_sel.selectbox("Select PeriodKey",list(df['PeriodKey'].unique()), help = period_key_sel_help, key="PeriodKey_selection")
+    segment = segment_sel.selectbox("Select Segment", list(df['Segment'].unique()), help = segment_sel_help, key="Segment_selection")
 
     sel_statsig_help="Select type of statsig, Benchmark or Max logic"
     sel_benchmark_help="Select Benchmark Brand/Segment (Appicable to Statsig method = benchmark only)"
@@ -568,7 +575,7 @@ def dande_statsig_select(df,segment,tab=st):
     if selected_statsig_type=="Max":
         df_selection=[None]
     elif selected_statsig_type=="Benchmark":
-        df_selection=df[df["Segment"]==segment]["Brand"].unique()
+        df_selection=df[(df['PeriodKey']==period_key)&(df["Segment"]==segment)]["Brand"].unique()
     benchmark_target=bencmark_target.selectbox("Benchmark",df_selection,help=sel_benchmark_help,key=segment+"_target")
 
     
@@ -581,33 +588,73 @@ def dande_statsig_select(df,segment,tab=st):
     base = base_sel.selectbox("Base (Overall Segment with Brand = All)", options=list(base_dict.keys()), format_func=format_func,help=base_tooltip,key=segment)
     
 
-    return selected_statsig_type,benchmark_target,base
+    return period_key, segment, selected_statsig_type,benchmark_target,base
 
 
-def dande_segment(df,tab=st):
-    for segment in df["Segment"].unique():
-        tab.subheader(segment)
+# def dande_segment(df,tab=st):
+#     for segment in df["Segment"].unique():
+#         tab.subheader(segment)
+#
+#         ## Select box for statsig method and benchmarl
+#         dande_seleceted_statsig,dande_benchmark,base=dande_statsig_select(df,segment,tab)
+#
+#         ## Get CBI
+#         df_cbi=df.copy()
+#         df_cbi=df_cbi[df_cbi["Segment"]==segment]
+#         df_cbi=df_cbi.drop(columns=["Driver_Score","Driver","Equity_Score"])
+#         df_cbi=df_cbi.drop_duplicates()
+#         df_cbi["Driver"] = "CBI"
+#         df_cbi=df_cbi.rename(columns={"CBI":"Equity_Score"})
+#         df_with_cbi = pd.concat([df[df["Segment"]==segment],df_cbi])
+#
+#
+#         ## Pivot
+#         df_pivot=df_with_cbi[df_with_cbi["Segment"]==segment].pivot(index=["Driver_Score","Driver"],columns="Brand",values="Equity_Score").reset_index()
+#         df_pivot=df_pivot.sort_values("Driver_Score",ascending = False)
+#
+#         ## Rearranfe column if is benchamrk
+#         if dande_seleceted_statsig == "Benchmark":
+#             other_brand=df[df["Segment"]==segment]["Brand"].unique().tolist()
+#             other_brand.remove(dande_benchmark)
+#             # other_brand=other_brand.to_list()
+#             # tab.dataframe(other_brand)
+#
+#             df_pivot=df_pivot[["Driver_Score","Driver",dande_benchmark]+other_brand]
+#
+#
+#         df_pivot = df_pivot.convert_dtypes()
+#         updated_df=apply_statsig(df_pivot,dande_seleceted_statsig,base,first_col=2)
+#
+#         tab.dataframe(updated_df)
+#         output(updated_df,base,name="D&E_"+segment+"xlsx",tab=tab)
+#
+#     pass
 
+
+def dande_tab_execute(df,tab=st):
         ## Select box for statsig method and benchmarl
-        dande_seleceted_statsig,dande_benchmark,base=dande_statsig_select(df,segment,tab)
+        period_key, segment, dande_selected_statsig,dande_benchmark,base=dande_statsig_select(df,tab)
 
         ## Get CBI
         df_cbi=df.copy()
-        df_cbi=df_cbi[df_cbi["Segment"]==segment]
+        df_cbi=df_cbi[(df_cbi["PeriodKey"]==period_key)&(df_cbi["Segment"]==segment)]
         df_cbi=df_cbi.drop(columns=["Driver_Score","Driver","Equity_Score"])
         df_cbi=df_cbi.drop_duplicates()
         df_cbi["Driver"] = "CBI"
         df_cbi=df_cbi.rename(columns={"CBI":"Equity_Score"})
-        df_with_cbi = pd.concat([df[df["Segment"]==segment],df_cbi])
+        # df_with_cbi = pd.concat([df[df["Segment"]==segment],df_cbi])
+        df_equity = df[(df["PeriodKey"]==period_key)&(df["Segment"]==segment)]
+        df_equity = df_equity.drop(columns=["CBI"])
+        df_with_cbi = pd.concat((df_equity, df_cbi), axis=0).reset_index(drop=True)
 
 
         ## Pivot
-        df_pivot=df_with_cbi[df_with_cbi["Segment"]==segment].pivot(index=["Driver_Score","Driver"],columns="Brand",values="Equity_Score").reset_index()
-        df_pivot=df_pivot.sort_values("Driver_Score",ascending = False)
+        df_pivot=df_with_cbi[(df_with_cbi["PeriodKey"]==period_key)&(df_with_cbi["Segment"]==segment)].pivot(index=["Driver_Score","Driver"],columns="Brand",values="Equity_Score").reset_index()
+        df_pivot=df_pivot.sort_values("Driver_Score",ascending=False).reset_index(drop=True)
 
-        ## Rearranfe column if is benchamrk
-        if dande_seleceted_statsig == "Benchmark":
-            other_brand=df[df["Segment"]==segment]["Brand"].unique().tolist()
+        ## Rearrange column if is benchamrk
+        if dande_selected_statsig == "Benchmark":
+            other_brand=df[(df["PeriodKey"]==period_key)&(df["Segment"]==segment)]["Brand"].unique().tolist()
             other_brand.remove(dande_benchmark)
             # other_brand=other_brand.to_list()
             # tab.dataframe(other_brand)
@@ -615,12 +662,11 @@ def dande_segment(df,tab=st):
             df_pivot=df_pivot[["Driver_Score","Driver",dande_benchmark]+other_brand]
 
 
-        updated_df=apply_statsig(df_pivot,dande_seleceted_statsig,base,first_col=2)
+        df_pivot = df_pivot.convert_dtypes()
+        updated_df=apply_statsig(df_pivot,dande_selected_statsig,base,first_col=2)
 
-        tab.dataframe(updated_df)
+        tab.dataframe(updated_df, hide_index=True)
         output(updated_df,base,name="D&E_"+segment+"xlsx",tab=tab)
-
-    pass
 
 
 def app():
@@ -629,7 +675,7 @@ def app():
 
     global buffer
     buffer = io.BytesIO()
-    statsig_tab, pop_tab = st.tabs(["Statistical Significant", 'PoP Statistical Significant'])
+    statsig_tab, pop_tab, dande_tab = st.tabs(["Statistical Significant", 'PoP Statistical Significant', "Drivers and Equity"])
 
     ## Statsig _tab
     statsig_tab.write("If **Benchmark** is the selected statsig method, **first column** would be assumed to be the benchmark value")
@@ -654,10 +700,11 @@ def app():
         st.dataframe(applied_pop_df)
 
 
-    # ## D&E _tab
-    # df2,f2=input(dande_tab,sheet_name="Drivers")
-    # if f2 is not None:
-    #     dande_segment(df2,dande_tab)
+    ## D&E _tab
+    df2,f2=input(dande_tab,sheet_name="Drivers")
+    if f2 is not None:
+        # dande_segment(df2,dande_tab)
+        dande_tab_execute(df2,dande_tab)
 
 
     # # Performance tab
