@@ -560,9 +560,9 @@ def get_slide_master_df(default_template, placeholder_description_input, slide_m
                                          ["Scope", "Project_Scope"],
                                          ["Divider_normal", "Section_Divider"],
                                          ["Scope_of_Work", "SOW"],
-                                         ["Content_Vertical", "Performance"],
+                                         ["Content_Horizontal", "Performance"],
                                          ["Content_Horizontal_Chart", "Emerging Trends"],
-                                         ["Content_Vertical", "Drivers"],
+                                         ["Content_Horizontal", "Drivers"],
                                          ["KOL", "KOL"],
                                          ["End", "Deck_End"],
                                          ["blank", "blank_slide"]
@@ -846,13 +846,13 @@ def format_table_cells(table, table_format):
         pass
 
 
-def get_table_format(slide_df, table_config_json, brief_doc_path=""):
+def get_table_format(slide_df, table_config_json, slide_type="Performance", brief_doc_path=""):
     """
         Return table/cell formatting as specified //
         WORK IN PROGRESS: UPDATED DRIVERS AND CROSS SEGMENT
     """
     # slide_type = slide_df['Slide_Type'].unique()[0]
-    slide_type="Performance"
+    # slide_type="Performance"
     table_format_dict = {
         # "Project_Scope": {
         #     "row_end_index": len(Document(brief_doc_path).tables[1].rows),
@@ -947,7 +947,8 @@ def get_table_format(slide_df, table_config_json, brief_doc_path=""):
         # },
         "Performance": {
             "row_end_index": len(slide_df) + 2,
-            "col_end_index": len([col for col in slide_df.columns if re.match('Segment *', col)]) + 1,
+            # "col_end_index": len([col for col in slide_df.columns if re.match('Segment *', col)]) + 1,
+            "col_end_index": len(slide_df.columns),
             "cell_fill_colour": RGBColor(242, 242, 242),
             "cell_font_colour": RGBColor(0, 0, 0),
             "cell_font_size": Pt(16),
@@ -999,7 +1000,7 @@ def get_table_format(slide_df, table_config_json, brief_doc_path=""):
                     "cell_fill_colour": RGBColor(255, 255, 255),
                     "cell_para_align": PP_PARAGRAPH_ALIGNMENT.LEFT,
                     "cell_font_colour": RGBColor(0, 0, 0),
-                    "cell_font_size": Pt(18),
+                    "cell_font_size": Pt(12),
                     "cell_font_bold": True,
                     "cell_font_italic": False,
                     "cell_height": Inches(0.1),
@@ -1020,7 +1021,7 @@ def get_table_format(slide_df, table_config_json, brief_doc_path=""):
         },
         "Drivers": {
             "row_end_index": len(slide_df) + 1,
-            "col_end_index": len(slide_df.columns) - 11,
+            "col_end_index": len(slide_df.columns),
             "cell_fill_colour": RGBColor(255, 255, 255),
             "cell_font_colour": RGBColor(0, 0, 0),
             "cell_font_size": Pt(10),
@@ -1072,7 +1073,7 @@ def get_table_format(slide_df, table_config_json, brief_doc_path=""):
                     "cell_fill_colour": RGBColor(255, 255, 255),
                     "cell_para_align": PP_PARAGRAPH_ALIGNMENT.CENTER,
                     "cell_font_colour": RGBColor(0, 0, 0),
-                    "cell_font_size": Pt(18),
+                    "cell_font_size": Pt(12),
                     "cell_font_bold": True,
                     "cell_font_italic": False,
                     "cell_height": Inches(0.1),
@@ -1083,7 +1084,40 @@ def get_table_format(slide_df, table_config_json, brief_doc_path=""):
                     "cell_fill_colour": RGBColor(255, 255, 255),
                     "cell_para_align": PP_PARAGRAPH_ALIGNMENT.LEFT,
                     "cell_font_colour": RGBColor(0, 0, 0),
-                    "cell_font_size": Pt(18),
+                    "cell_font_size": Pt(12),
+                    "cell_font_bold": True,
+                    "cell_font_italic": False,
+                    "cell_height": Inches(0.1),
+                    "cell_width": Inches(4)
+                },
+                {
+                    "cell_position": (len(slide_df),"row"),
+                    "cell_fill_colour": RGBColor(204, 255, 255),
+                    "cell_para_align": PP_PARAGRAPH_ALIGNMENT.CENTER,
+                    "cell_font_colour": RGBColor(0, 0, 0),
+                    "cell_font_size": Pt(12),
+                    "cell_font_bold": True,
+                    "cell_font_italic": False,
+                    "cell_height": Inches(0.1),
+                    "cell_width": Inches(0.5)
+                },
+                {
+                    "cell_position": (len(slide_df),0),
+                    "cell_fill_colour": RGBColor(204, 255, 255),
+                    "cell_para_align": PP_PARAGRAPH_ALIGNMENT.CENTER,
+                    "cell_font_colour": RGBColor(0, 0, 0),
+                    "cell_font_size": Pt(1),
+                    "cell_font_bold": False,
+                    "cell_font_italic": True,
+                    "cell_height": Inches(0.1),
+                    "cell_width": Inches(1)
+                },
+                {
+                    "cell_position": (len(slide_df),1),
+                    "cell_fill_colour": RGBColor(204, 255, 255),
+                    "cell_para_align": PP_PARAGRAPH_ALIGNMENT.RIGHT,
+                    "cell_font_colour": RGBColor(0, 0, 0),
+                    "cell_font_size": Pt(12),
                     "cell_font_bold": True,
                     "cell_font_italic": False,
                     "cell_height": Inches(0.1),
@@ -1091,57 +1125,57 @@ def get_table_format(slide_df, table_config_json, brief_doc_path=""):
                 },
             ]
         },
-        "KOL": {
-            "row_end_index": len(slide_df.columns) - 1,
-            "col_end_index": 6,
-            "cell_fill_colour": RGBColor(255, 255, 255),
-            "cell_font_colour": RGBColor(0, 0, 0),
-            "cell_font_size": Pt(10),
-            "cell_font_name": 'Poppins',
-            "cell_para_align": PP_PARAGRAPH_ALIGNMENT.CENTER,
-            "cell_vert_anchor": MSO_VERTICAL_ANCHOR.MIDDLE,
-            "cell_border": "none",
-            "cell_border_colour": "FFFFFF",
-            "cell_border_size": "50800",
-            "cell_font_bold": False,
-            "cell_font_italic": False,
-            "cell_fill_transparent": True,
-            "special_format": [
-                {
-                    "cell_position": ("col", 0),
-                    "cell_fill_colour": RGBColor(255, 255, 255),
-                    "cell_para_align": PP_PARAGRAPH_ALIGNMENT.LEFT,
-                    "cell_font_colour": RGBColor(0, 0, 0),
-                    "cell_font_size": Pt(12),
-                    "cell_font_bold": True,
-                    "cell_font_italic": False,
-                    "cell_height": Inches(0.1),
-                    "cell_width": Inches(2.1)
-                },
-                {
-                    "cell_position": (0, "row"),
-                    "cell_fill_colour": RGBColor(255, 255, 255),
-                    "cell_para_align": PP_PARAGRAPH_ALIGNMENT.CENTER,
-                    "cell_font_colour": RGBColor(127, 127, 127),
-                    "cell_font_size": Pt(10),
-                    "cell_font_bold": False,
-                    "cell_font_italic": False,
-                    "cell_height": Inches(0.1),
-                    "cell_width": Inches(2.1)
-                },
-                {
-                    "cell_position": (0, 0),
-                    "cell_fill_colour": RGBColor(255, 255, 255),
-                    "cell_para_align": PP_PARAGRAPH_ALIGNMENT.LEFT,
-                    "cell_font_colour": RGBColor(127, 127, 127),
-                    "cell_font_size": Pt(10),
-                    "cell_font_bold": True,
-                    "cell_font_italic": False,
-                    "cell_height": Inches(0.1),
-                    "cell_width": Inches(2.1)
-                },
-            ]
-        }
+        # "KOL": {
+        #     "row_end_index": len(slide_df.columns) - 1,
+        #     "col_end_index": 6,
+        #     "cell_fill_colour": RGBColor(255, 255, 255),
+        #     "cell_font_colour": RGBColor(0, 0, 0),
+        #     "cell_font_size": Pt(10),
+        #     "cell_font_name": 'Poppins',
+        #     "cell_para_align": PP_PARAGRAPH_ALIGNMENT.CENTER,
+        #     "cell_vert_anchor": MSO_VERTICAL_ANCHOR.MIDDLE,
+        #     "cell_border": "none",
+        #     "cell_border_colour": "FFFFFF",
+        #     "cell_border_size": "50800",
+        #     "cell_font_bold": False,
+        #     "cell_font_italic": False,
+        #     "cell_fill_transparent": True,
+        #     "special_format": [
+        #         {
+        #             "cell_position": ("col", 0),
+        #             "cell_fill_colour": RGBColor(255, 255, 255),
+        #             "cell_para_align": PP_PARAGRAPH_ALIGNMENT.LEFT,
+        #             "cell_font_colour": RGBColor(0, 0, 0),
+        #             "cell_font_size": Pt(12),
+        #             "cell_font_bold": True,
+        #             "cell_font_italic": False,
+        #             "cell_height": Inches(0.1),
+        #             "cell_width": Inches(2.1)
+        #         },
+        #         {
+        #             "cell_position": (0, "row"),
+        #             "cell_fill_colour": RGBColor(255, 255, 255),
+        #             "cell_para_align": PP_PARAGRAPH_ALIGNMENT.CENTER,
+        #             "cell_font_colour": RGBColor(127, 127, 127),
+        #             "cell_font_size": Pt(10),
+        #             "cell_font_bold": False,
+        #             "cell_font_italic": False,
+        #             "cell_height": Inches(0.1),
+        #             "cell_width": Inches(2.1)
+        #         },
+        #         {
+        #             "cell_position": (0, 0),
+        #             "cell_fill_colour": RGBColor(255, 255, 255),
+        #             "cell_para_align": PP_PARAGRAPH_ALIGNMENT.LEFT,
+        #             "cell_font_colour": RGBColor(127, 127, 127),
+        #             "cell_font_size": Pt(10),
+        #             "cell_font_bold": True,
+        #             "cell_font_italic": False,
+        #             "cell_height": Inches(0.1),
+        #             "cell_width": Inches(2.1)
+        #         },
+        #     ]
+        # }
     }
     # with open(table_config_json, 'w') as json_file:
     #     json.dump(table_format_dict, json_file)
@@ -1149,25 +1183,40 @@ def get_table_format(slide_df, table_config_json, brief_doc_path=""):
     return table_format_dict[slide_type]
 
 
-def fill_table_data(slide, slide_df, decimal_place,base=None):
+def fill_table_data(slide, slide_df, slide_type="Performance",base=None):
     """
         Fill Table Placeholders with required inputs //
         Apply table formatting //
         WORK IN PROGRESS: UPDATE FOR CROSS SEGMENT, UPDATE KOL, EXTRACT PROJECT SCOPE FROM AI BRIEF
     """
     # slide_type = slide_df['Slide_Type'].unique()[0]
-    slide_type="Performance"
+    # slide_df['Content'] = slide_df['Content'].fillna("-")
+    slide_df = slide_df.fillna("-")
+
     for shape in slide.shapes:
         if (shape.is_placeholder) & ("Table" in shape.name):
             # new_table_format = get_table_format(slide_df, table_config_json, brief_doc_path)
-            new_table_format = get_table_format(slide_df, table_config_json)
+            new_table_format = get_table_format(slide_df, table_config_json, slide_type=slide_type)
             new_shape = shape.insert_table(new_table_format['row_end_index'], new_table_format['col_end_index'])
             tbl = new_shape._element.graphic.graphicData.tbl
             style_id = "{2D5ABB26-0587-4C30-8999-92F81FD0307C}"
             tbl[0][-1].text = style_id
             new_table = new_shape.table
 
-            if (slide.slide_layout.name == "Content_Vertical") & (slide_type == "Performance"):
+            if (slide.slide_layout.name == "Content_Horizontal") & (slide_type == "Performance"):
+                for row_index, row in enumerate(new_table.rows):
+                    # print("fill_table_data_row_index:",row_index)
+                    for cell_index, cell in enumerate(row.cells):
+                        # print("fill_table_data_cell_index:",cell_index)
+                        col = slide_df.columns[cell_index]
+                        if row_index == 0:
+                            if col == "Content":
+                                col = "Type/Subtype"
+                            cell.text = col
+                        if row_index > 1:
+                            data_value = slide_df.iat[row_index - 2, cell_index]
+                            data_value = str(data_value)
+                            cell.text = data_value
                 ## Single Segment
                 # if "Segment" in slide_df.columns:
                 #     header_top_left_cell = new_table.cell(0, 0)
@@ -1187,48 +1236,60 @@ def fill_table_data(slide, slide_df, decimal_place,base=None):
                 #                     cell.text = slide_df['Measure Value'].astype(str).iloc[row_index - 2]
                 ## Cross Segment
                 # if "Segment 1" in slide_df.columns:  ## to adjust
-                header_top_left_cell = new_table.cell(0, 0)
-                header_top_left_cell.text = "Type" + "/" + "Subtype"
-                num_segments = len([col for col in slide_df.columns if re.match('Segment *', col)])
-                for r in range(1, num_segments + 1):
-                    header_segment_cell = new_table.cell(0, r)
-                    if r ==1:
-                        header_segment_cell.text = f'Segment/Brand {r} \n (Benchmark)'  ## to adjust
-                    else:
-                        header_segment_cell.text = f'Segment/Brand {r}'  ## to adjust
+                # header_top_left_cell = new_table.cell(0, 0)
+                # header_top_left_cell.text = "Type" + "/" + "Subtype"
+                # num_segments = len([col for col in slide_df.columns if re.match('Segment *', col)])
+                # for r in range(1, num_segments + 1):
+                #     header_segment_cell = new_table.cell(0, r)
+                #     if r ==1:
+                #         header_segment_cell.text = f'Segment/Brand {r} \n (Benchmark)'  ## to adjust
+                #     else:
+                #         header_segment_cell.text = f'Segment/Brand {r}'  ## to adjust
+                #
+                #     subheader_num_cell = new_table.cell(1, r)
+                #     # segment_num_ppl = int(slide_df[f'No_of_People Segment {r}'].dropna().unique()[0])  ## to adjust
+                #     if base==None:
+                #         subheader_num_cell.text = f"(n= )"
+                #     else:
+                #         subheader_num_cell.text = f"(n= {str(base)} )"
+                #
+                #     for row_index, row in enumerate(new_table.rows):
+                #         if row_index > 1:
+                #             for cell_index, cell in enumerate(row.cells):
+                #                 if cell_index == 0:
+                #                     try:
+                #                         cell.text = slide_df['Content'].astype(str).iloc[row_index - 2]
+                #                     except:
+                #                         pass
+                #                 if cell_index == r:
+                #
+                #                     cell_value = slide_df[f'Segment/Brand {r}'].iloc[row_index - 2]
+                #
+                #                     if cell_value == 'nan':
+                #                         cell.text = "-"
+                #                     else:
+                #                         cell_value = cell_value.round(decimal_place)
+                #                         if decimal_place == 0:
+                #                             cell_value = str(int(cell_value))
+                #                         else:
+                #                             cell_value = str(cell_value)
+                #                         cell.text = cell_value  ## to adjust
 
-                    subheader_num_cell = new_table.cell(1, r)
-                    # segment_num_ppl = int(slide_df[f'No_of_People Segment {r}'].dropna().unique()[0])  ## to adjust
-                    if base==None:
-                        subheader_num_cell.text = f"(n= )"
-                    else:
-                        subheader_num_cell.text = f"(n= {str(base)} )"
+            if (slide.slide_layout.name == "Content_Horizontal") & (slide_type == "Drivers"):
+                slide_df['Driver_Score'] = slide_df['Driver_Score'].fillna(0)
+                for row_index, row in enumerate(new_table.rows):
+                    for cell_index, cell in enumerate(row.cells):
+                        col = slide_df.columns[cell_index]
+                        if row_index == 0:
+                            if col == "Driver_Score":
+                                col = "Score"
+                            cell.text = col
+                        if row_index > 0:
+                            # cell.text = str(slide_df[col].iloc[row_index - 1])
+                            cell.text = str(slide_df.iat[row_index - 1, cell_index])
 
-                    for row_index, row in enumerate(new_table.rows):
-                        if row_index > 1:
-                            for cell_index, cell in enumerate(row.cells):
-                                if cell_index == 0:
-                                    try:
-                                        cell.text = slide_df['Content'].astype(str).iloc[row_index - 2]
-                                    except:
-                                        pass
-                                if cell_index == r:
-                                    
-                                    cell_value = slide_df[f'Segment/Brand {r}'].iloc[row_index - 2]
-                                  
-                                    if cell_value == 'nan':
-                                        cell.text = "-"
-                                    else:
-                                        cell_value = cell_value.round(decimal_place)
-                                        if decimal_place == 0:
-                                            cell_value = str(int(cell_value))
-                                        else:
-                                            cell_value = str(cell_value)
-                                        cell.text = cell_value  ## to adjust
-
-
-        ## Formats table for all slide types above except KOL slide which has 2 tables so nested below
-            format_table_cells(new_table, new_table_format)
+    ## Formats table for all slide types above except KOL slide which has 2 tables so nested below
+    format_table_cells(new_table, new_table_format)
 
 
 # def fill_chart_data(slide, slide_df):
@@ -1276,6 +1337,8 @@ def find_threshold(number,base=None):
     """
         Get threshold value for segment / brand statistical significance comparison
     """
+    if not number:
+        return np.NaN
     if (base==None) or (base>1100):
         if number>45:
             return (4.1*1.25)
@@ -1286,7 +1349,8 @@ def find_threshold(number,base=None):
         elif number > 0:
             return (0.56*1.25)
         else:
-            return "Error"
+            return np.NaN
+            # return "Error"
     elif (base>750):
         if number>45:
             return (4.7*1.25)
@@ -1297,7 +1361,8 @@ def find_threshold(number,base=None):
         elif number > 0:
             return (0.97*1.25)
         else:
-            return "Error"
+            return np.NaN
+            # return "Error"
     elif (base>300):
         if number>45:
             return (6.3*1.25)
@@ -1308,19 +1373,27 @@ def find_threshold(number,base=None):
         elif number > 0:
             return (1.23*1.25)
         else:
-            return "Error"
+            return np.NaN
+            # return "Error"
     else:
-        return "Base less than 300!!"
+        return np.NaN
+        # return "Base less than 300!!"
 
 
-def find_largest_and_second_largest(numbers_list):
+def find_largest_and_second_largest(numbers_list, decimal_place=0):
     """
         Get first and second largest based on values of each row for Max Stat-sig analysis
     """
+    numbers_list = [num for num in numbers_list if num != "-"]
     if len(set(numbers_list)) <= 1:
         return None, None
     largest = max(numbers_list)
-    numbers_list = [num for num in numbers_list if int(round(num,0))!= int(round(largest,0))]
+    if decimal_place==0:
+        numbers_list = [num for num in numbers_list if int(round(num,0))!= int(round(largest,0))]
+    else:
+        numbers_list = [num for num in numbers_list if round(num,decimal_place)!= round(largest,decimal_place)]
+    if len(set(numbers_list)) < 1:
+        return None, None
     second_largest = max(numbers_list)
     return largest, second_largest
 
@@ -1343,96 +1416,64 @@ def set_cell_statsig_colour(cell, colour):
     """
     RED = RGBColor(255,0,0)
     GREEN = RGBColor(0, 176, 80)
-    try:
-        # cell.text_frame.paragraphs[0].text= str(int(round(float( cell.text_frame.text),0)))+" %"
-        ## 1.d.p instead of 0.d.p
-        cell.text_frame.paragraphs[0].text= str(round(float( cell.text_frame.text),1))+" %"
-    except:
-        pass
+    # try:
+    #     # cell.text_frame.paragraphs[0].text= str(int(round(float( cell.text_frame.text),0)))+" %"
+    #     ## 1.d.p instead of 0.d.p
+    #     cell.text_frame.paragraphs[0].text= str(round(float( cell.text_frame.text),1))+" %"
+    # except:
+    #     pass
     for para in cell.text_frame.paragraphs:
         for run in para.runs:
+            # run.font.size = Pt(10)
             if colour == "Green":
                 run.font.color.rgb = GREEN
             if colour == "Red":
                 run.font.color.rgb = RED
 
 
-def apply_stat_sig(slide, statsig_type, base):
+def apply_stat_sig(slide, statsig_type, base, decimal_place=0, slide_type="Performance"):
     """
         Max Stat-sig: Compare data points of cross segments to get diff between 1st/2nd largest and determine stat-significance of largest value. //
         Benchmark Stat-sig: Compare each data point to ref benchmark value to determine stat-superior/inferior of benchmark value against other value. //
         Set cell font colour to green/red if diff exceeds Stat-Sig threshold.
     """
-
-
     ## Get base number of people
- 
     # performance_type = slide_df['Type'].unique()[0]
     # performance_subtype = slide_df['Subtype'].unique()[0]
 
     ## Get table from slide
     table = get_slide_table(slide)
-    slide_table = get_slide_table_values(table)
-
+    slide_table_df = get_slide_table_values(table)
+    if slide_type == "Performance":
+        row_start_index = 2
+        col_start_index = 1
+    elif slide_type == "Drivers":
+        row_start_index = 1
+        col_start_index = 2
 
     # benchmark = "Segment/Brand 1"
-    if statsig_type == "max":
-        ## Get 1st/2nd largest, threshold
-        for table_idx, row in slide_table.iterrows():
-            if table_idx > 1:
-                num_list = list(row[1:len(row)])
-                # num_list = [float(num.strip('%')) for num in num_list if num != "-"]
-                num_list = [0 if num =="-" else float(num) for num in num_list]
-
-                (largest, second) = find_largest_and_second_largest(num_list)
-                if (largest != None) & (second != None):
-                    largest_index_list = [num_index for num_index, num in enumerate(num_list) if int(round(num,0)) == int(round(largest,0))]
-                # second_index = num_list.index(second)
-                threshold = find_threshold(largest, base)
-                diff = largest - second
-                print(largest_index_list)
-                print(diff)
-                print(threshold)
-                for num_idx, num in enumerate(num_list):
-                    cell = table.cell(table_idx, num_idx + 1)
-
-                    if ((num_idx in largest_index_list) & (diff>threshold)):
-
-                        set_cell_statsig_colour(cell, "Green")
-                    else:
-                        set_cell_statsig_colour(cell, None)
-
-                    # for largest_index in largest_index_list:
-                    #     second_index = num_list.index(second)
-                    #     threshold = find_threshold(largest, base)
-                    #     diff = largest - second
-
-                    #     cell = table.cell(table_idx, largest_index + 1)
-                    #     if diff > threshold:
-                    #         set_cell_statsig_colour(cell, "Green")
-                    #     else:
-                    #         set_cell_statsig_colour(cell, None)
-
-    if statsig_type=="benchmark" :
+    if "benchmark" in statsig_type:
         ## Get benchmark segment / respective column
         # ref_benchmark = benchmark
 
         ## set row index and column index to start iterating from
         # if "segment" in statsig_type:
-        row_start_index = 2
-        col_start_index = 1
+        # row_start_index = 2
+        # col_start_index = 1
         # if "brand" in statsig_type:
         #     row_start_index = 1
         #     col_start_index = 2
-
         ## Get threshold and compare diff of each segment value against benchmark segment value
-        for table_idx, row in slide_table.iterrows():
-            if table_idx >= row_start_index:
+        for table_idx, row in slide_table_df.iterrows():
+            # if table_idx >= row_start_index:
+            if table_idx > 1:
+                # print("table_idx>=row_start_index:",slide_table_df.iat[table_idx, col_start_index], row)
                 num_list = list(row[col_start_index:len(row)])
                 # num_list = [float(num.strip("%")) for num in num_list if num != "-"]
                 num_list = [0 if num =="-" else float(num) for num in num_list]
+                # num_list = [0 if num =="-" else num for num in num_list]
 
-                # benchmark_idx = get_benchmark_col_idx(slide_table, ref_benchmark) - col_start_index
+                # benchmark_idx = get_benchmark_col_idx(slide_table_df, ref_benchmark) - col_start_index
                 benchmark_idx = 0
 
                 if benchmark_idx < len(num_list):
@@ -1446,32 +1487,85 @@ def apply_stat_sig(slide, statsig_type, base):
                     # table.cell(table_idx, benchmark_idx + col_start_index).text_frame.paragraphs[0].runs[
                     #     0].font.bold = True
                     for num_idx, num in enumerate(num_list):
-                        
+
                         diff = num - benchmark_value
                         cell = table.cell(table_idx, num_idx + col_start_index)
+                        # print(table_idx, num_idx+col_start_index, cell.text)
 
-                        if num ==0:
+                        if (num == 0) | (np.isnan(num)) | (isinstance(num,str)):
                             set_cell_statsig_colour(cell, None)
 
                         else:
                         ## default logic, i.e. other value is stat-larger than benchmark value shall be red
-                            try:
-                                if (diff > threshold) & ("inverse" not in statsig_type):
-                                    set_cell_statsig_colour(cell, "Red")
-                                if (diff < - threshold) & ("inverse" not in statsig_type):
-                                    set_cell_statsig_colour(cell, "Green")
-                                ## inverse logic, i.e. other value is stat-larger than benchmark value shall be green
-                                if (diff > threshold) & ("inverse" in statsig_type):
-                                    set_cell_statsig_colour(cell, "Green")
-                                if (diff < - threshold) & ("inverse" in statsig_type):
-                                    set_cell_statsig_colour(cell, "Red")
-                                else :
-                                    set_cell_statsig_colour(cell, None)
-                            except:
-                                set_cell_statsig_colour(cell, None)
+                            # try:
+                            if slide_type == "Performance":
+                                cell_value = round(num, decimal_place)
+                                if decimal_place == 0:
+                                    cell_value = str(int(cell_value)) + "%"
+                                else:
+                                    cell_value = str(cell_value) + "%"
+                                cell.text_frame.paragraphs[0].text = cell_value
+                            elif slide_type == "Drivers":
+                                cell.text_frame.paragraphs[0].text= str(int(round(num,0)))
 
-                    table.cell(table_idx, benchmark_idx + col_start_index).text_frame.paragraphs[0].runs[
-                        0].font.bold = True
+                            if (diff > threshold) & ("inverse" not in statsig_type):
+                                set_cell_statsig_colour(cell, "Red")
+                            if (diff < - threshold) & ("inverse" not in statsig_type):
+                                set_cell_statsig_colour(cell, "Green")
+                            ## inverse logic, i.e. other value is stat-larger than benchmark value shall be green
+                            if (diff > threshold) & ("inverse" in statsig_type):
+                                set_cell_statsig_colour(cell, "Green")
+                            if (diff < - threshold) & ("inverse" in statsig_type):
+                                set_cell_statsig_colour(cell, "Red")
+                            else :
+                                set_cell_statsig_colour(cell, None)
+                            # except:
+                            #     set_cell_statsig_colour(cell, None)
+                    table.cell(table_idx, benchmark_idx + col_start_index).text_frame.paragraphs[0].runs[0].font.bold = True
+
+    if statsig_type == "max":
+        ## Get 1st/2nd largest, threshold
+        for table_idx, row in slide_table_df.iterrows():
+            if table_idx > 1:
+                num_list = list(row[col_start_index:len(row)])
+                # num_list = [float(num) for num in num_list if num != "-"]
+                num_list = [num if num =="-" else float(num) for num in num_list]
+                fillna_num_list = [0 if num =="-" else float(num) for num in num_list]
+
+                for num_idx, num in enumerate(num_list):
+                    cell = table.cell(table_idx, num_idx + 1)
+                    if isinstance(num, str):
+                        set_cell_statsig_colour(cell, None)
+                        continue
+                    if slide_type == "Performance":
+                        cell_value = round(float(num),decimal_place)
+                        if decimal_place == 0:
+                            cell_value = str(int(cell_value)) + "%"
+                        else:
+                            cell_value = str(cell_value) + "%"
+                        cell.text = cell_value
+                    (largest, second) = find_largest_and_second_largest(num_list, decimal_place=decimal_place)
+                    if (largest != None) & (second != None):
+                        largest_index_list = [num_index for num_index, num in enumerate(fillna_num_list) if round(num,decimal_place) == round(largest,decimal_place)]
+                        # second_index = num_list.index(second)
+                        threshold = find_threshold(largest, base)
+                        diff = largest - second
+
+                        if ((num_idx in largest_index_list) & (diff>threshold)):
+                            set_cell_statsig_colour(cell, "Green")
+                        else:
+                            set_cell_statsig_colour(cell, None)
+
+                        # for largest_index in largest_index_list:
+                        #     second_index = num_list.index(second)
+                        #     threshold = find_threshold(largest, base)
+                        #     diff = largest - second
+
+                        #     cell = table.cell(table_idx, largest_index + 1)
+                        #     if diff > threshold:
+                        #         set_cell_statsig_colour(cell, "Green")
+                        #     else:
+                        #         set_cell_statsig_colour(cell, None)
 
     """ Try to change to 1 d.p,fail"""
     # for row_idx, row in enumerate(table.rows):
@@ -1480,28 +1574,23 @@ def apply_stat_sig(slide, statsig_type, base):
     #             if cell_idx>0:
     #                 if cell.text_frame.paragraphs[0].text != "-":
     #                     cell.text_frame.paragraphs[0].text= str(int(round(float( cell.text_frame.text),0)))
-          
-                        # Access the text in the cell
 
+                        # Access the text in the cell
 
         # num_list = list(row[col_start_index:len(row)])
         # num_list = [float(num.strip("%")) for num in num_list if num != "-"]
         # for num_idx, num in enumerate(num_list):
 
-  
         # for para in cell.text_frame:
         #     para.text= str(int(round(float(para.text),0)))
         # cell.text_frame.text= str(int(round(float( cell.text_frame.text),0)))
-
-
-      
-    return slide_table
+    return slide_table_df
 
 
 """""""""""""""""""""""""""""""""""""""  Execute Functions """""""""""""""""""""""""""""""""""""""""""""
 
 
-def main_execute(df,statsig_type,base,decimal_place):
+def main_execute(df,statsig_type,base,decimal_place=0,slide_type="Performance"):
     """
         Execute all functions to generate sequential data dict and PPT slide sequence with text/table inputs //
         Print for each slide added //
@@ -1512,19 +1601,23 @@ def main_execute(df,statsig_type,base,decimal_place):
     # slide_sequence_dict = get_slide_sequence_values(mapping_path)
     slide_master_df = get_slide_master_df(default_template, placeholder_description_input,
                                           slide_master_placeholders_output)
-    
-    # print(slide_sequence_dict)
+    if "Type" in df.columns:
+        first_type = df['Type'].unique()[0]
+        first_subtype = df['Subtype'].unique()[0]
+        df = df[(df['Type']==first_type)&(df['Subtype']==first_subtype)].drop(columns=['Type','Subtype'])
+    # print("main_execute:",statsig_type, df.shape, df.columns)
 
-    temp_slide_layout_index = slide_master_df[slide_master_df['Slide_Type'] == "Performance"]['Slide_Layout_Index'].unique()[0]
-    new_slide = prs.slides.add_slide(prs.slide_layouts[temp_slide_layout_index])
-    # print(f"{slide_key} slide added using {new_slide.slide_layout.name}")
-    # fill_text_data(new_slide, df, slide_master_df)
-    fill_table_data(new_slide, df, decimal_place, base=base)
-    apply_stat_sig(new_slide, statsig_type, base)
+    if len(df) > 0:
+        temp_slide_layout_index = slide_master_df[slide_master_df['Slide_Type'] == slide_type]['Slide_Layout_Index'].unique()[0]
+        new_slide = prs.slides.add_slide(prs.slide_layouts[temp_slide_layout_index])
+        # print(f"{slide_key} slide added using {new_slide.slide_layout.name}")
+        # fill_text_data(new_slide, df, slide_master_df)
+        fill_table_data(new_slide, df, base=base, slide_type=slide_type)
+        apply_stat_sig(new_slide, statsig_type, base, decimal_place=decimal_place, slide_type=slide_type)
     # if 'Statsig_Type' in slide_df.columns:
     #     apply_stat_sig(new_slide, slide_df)
 
-    # prs.save(output_file_name)
+        # prs.save(output_file_name)
     prs.save("./Files/statsig_app/temp.pptx")
     ppt_buffer=io.BytesIO()
     prs.save(ppt_buffer)
