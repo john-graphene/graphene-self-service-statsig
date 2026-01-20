@@ -1426,6 +1426,7 @@ def set_cell_statsig_colour(cell, colour):
     # except:
     #     pass
     for para in cell.text_frame.paragraphs:
+        para.alignment = PP_PARAGRAPH_ALIGNMENT.CENTER
         for run in para.runs:
             run.font.size = Pt(12)
             if colour == "Green":
@@ -1547,6 +1548,7 @@ def apply_stat_sig(slide, statsig_type, base, decimal_place=0, slide_type="Perfo
                         else:
                             cell_value = str(cell_value) + "%"
                         cell.text = cell_value
+                        set_cell_statsig_colour(cell, None)
                     (largest, second) = find_largest_and_second_largest(num_list, decimal_place=decimal_place)
                     if (largest != None) & (second != None):
                         largest_index_list = [num_index for num_index, num in enumerate(fillna_num_list) if round(num,decimal_place) == round(largest,decimal_place)]
@@ -1556,8 +1558,8 @@ def apply_stat_sig(slide, statsig_type, base, decimal_place=0, slide_type="Perfo
 
                         if ((num_idx in largest_index_list) & (diff>threshold)):
                             set_cell_statsig_colour(cell, "Green")
-                        else:
-                            set_cell_statsig_colour(cell, None)
+                        # else:
+                        #     set_cell_statsig_colour(cell, None)
 
                         # for largest_index in largest_index_list:
                         #     second_index = num_list.index(second)
