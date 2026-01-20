@@ -656,6 +656,7 @@ def dande_statsig_select(df,tab=st,segment=str):
         df_selection=[None]
     elif selected_statsig_type=="Benchmark":
         df_selection=df[(df['PeriodKey']==period_key)&(df["Segment"]==segment)]["Brand"].unique()
+        df_selection=sorted(df_selection)
     benchmark_target=bencmark_target.selectbox("Benchmark",df_selection,help=sel_benchmark_help,key=segment+"_target")
 
     

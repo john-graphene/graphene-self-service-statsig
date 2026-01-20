@@ -1024,7 +1024,7 @@ def get_table_format(slide_df, table_config_json, slide_type="Performance", brie
             "col_end_index": len(slide_df.columns),
             "cell_fill_colour": RGBColor(255, 255, 255),
             "cell_font_colour": RGBColor(0, 0, 0),
-            "cell_font_size": Pt(10),
+            "cell_font_size": Pt(16),
             "cell_font_name": 'Poppins',
             "cell_para_align": PP_PARAGRAPH_ALIGNMENT.CENTER,
             "cell_vert_anchor": MSO_VERTICAL_ANCHOR.MIDDLE,
@@ -1040,7 +1040,7 @@ def get_table_format(slide_df, table_config_json, slide_type="Performance", brie
                     "cell_fill_colour": RGBColor(255, 255, 255),
                     "cell_para_align": PP_PARAGRAPH_ALIGNMENT.CENTER,
                     "cell_font_colour": RGBColor(0, 0, 0),
-                    "cell_font_size": Pt(10),
+                    "cell_font_size": Pt(12),
                     "cell_font_bold": True,
                     "cell_font_italic": True,
                     "cell_height": Inches(0.1),
@@ -1051,7 +1051,7 @@ def get_table_format(slide_df, table_config_json, slide_type="Performance", brie
                     "cell_fill_colour": RGBColor(217, 217, 217),
                     "cell_para_align": PP_PARAGRAPH_ALIGNMENT.CENTER,
                     "cell_font_colour": RGBColor(0, 0, 0),
-                    "cell_font_size": Pt(10),
+                    "cell_font_size": Pt(16),
                     "cell_font_bold": True,
                     "cell_font_italic": False,
                     "cell_height": Inches(0.1),
@@ -1062,7 +1062,7 @@ def get_table_format(slide_df, table_config_json, slide_type="Performance", brie
                     "cell_fill_colour": RGBColor(242, 242, 242),
                     "cell_para_align": PP_PARAGRAPH_ALIGNMENT.LEFT,
                     "cell_font_colour": RGBColor(0, 0, 0),
-                    "cell_font_size": Pt(10),
+                    "cell_font_size": Pt(16),
                     "cell_font_bold": False,
                     "cell_font_italic": False,
                     "cell_height": Inches(0.1),
@@ -1073,7 +1073,7 @@ def get_table_format(slide_df, table_config_json, slide_type="Performance", brie
                     "cell_fill_colour": RGBColor(255, 255, 255),
                     "cell_para_align": PP_PARAGRAPH_ALIGNMENT.CENTER,
                     "cell_font_colour": RGBColor(0, 0, 0),
-                    "cell_font_size": Pt(12),
+                    "cell_font_size": Pt(16),
                     "cell_font_bold": True,
                     "cell_font_italic": False,
                     "cell_height": Inches(0.1),
@@ -1084,7 +1084,7 @@ def get_table_format(slide_df, table_config_json, slide_type="Performance", brie
                     "cell_fill_colour": RGBColor(255, 255, 255),
                     "cell_para_align": PP_PARAGRAPH_ALIGNMENT.LEFT,
                     "cell_font_colour": RGBColor(0, 0, 0),
-                    "cell_font_size": Pt(12),
+                    "cell_font_size": Pt(16),
                     "cell_font_bold": True,
                     "cell_font_italic": False,
                     "cell_height": Inches(0.1),
@@ -1095,7 +1095,7 @@ def get_table_format(slide_df, table_config_json, slide_type="Performance", brie
                     "cell_fill_colour": RGBColor(204, 255, 255),
                     "cell_para_align": PP_PARAGRAPH_ALIGNMENT.CENTER,
                     "cell_font_colour": RGBColor(0, 0, 0),
-                    "cell_font_size": Pt(12),
+                    "cell_font_size": Pt(16),
                     "cell_font_bold": True,
                     "cell_font_italic": False,
                     "cell_height": Inches(0.1),
@@ -1117,7 +1117,7 @@ def get_table_format(slide_df, table_config_json, slide_type="Performance", brie
                     "cell_fill_colour": RGBColor(204, 255, 255),
                     "cell_para_align": PP_PARAGRAPH_ALIGNMENT.RIGHT,
                     "cell_font_colour": RGBColor(0, 0, 0),
-                    "cell_font_size": Pt(12),
+                    "cell_font_size": Pt(16),
                     "cell_font_bold": True,
                     "cell_font_italic": False,
                     "cell_height": Inches(0.1),
@@ -1428,7 +1428,7 @@ def set_cell_statsig_colour(cell, colour):
     for para in cell.text_frame.paragraphs:
         para.alignment = PP_PARAGRAPH_ALIGNMENT.CENTER
         for run in para.runs:
-            run.font.size = Pt(12)
+            run.font.size = Pt(16)
             if colour == "Green":
                 run.font.color.rgb = GREEN
             if colour == "Red":
@@ -1539,7 +1539,7 @@ def apply_stat_sig(slide, statsig_type, base, decimal_place=0, slide_type="Perfo
                 for num_idx, num in enumerate(num_list):
                     cell = table.cell(table_idx, num_idx + 1)
                     if isinstance(num, str):
-                        set_cell_statsig_colour(cell, None)
+                        # set_cell_statsig_colour(cell, None)
                         continue
                     if slide_type == "Performance":
                         cell_value = round(float(num),decimal_place)
