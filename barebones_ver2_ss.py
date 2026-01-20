@@ -1191,7 +1191,10 @@ def fill_table_data(slide, slide_df, slide_type="Performance",base=None):
     """
     # slide_type = slide_df['Slide_Type'].unique()[0]
     # slide_df['Content'] = slide_df['Content'].fillna("-")
-    slide_df = slide_df.fillna("-")
+    try:
+        slide_df = slide_df.fillna("-")
+    except TypeError:
+        slide_df = slide_df.fillna(0)
 
     for shape in slide.shapes:
         if (shape.is_placeholder) & ("Table" in shape.name):

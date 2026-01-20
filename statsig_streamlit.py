@@ -432,7 +432,9 @@ def multi_select_and_df(df1,tab=st, decimal_place=1):
         # df_pivot = df_pivot[df_pivot_cols]
 
         styled_table_results = dataframe_show.container()
-        decimal_place = set_decimal_place_box(tab=dataframe_show, key="Performance_decimal_place_box")
+        decimal_place_placeholder = dataframe_show.container()
+        with decimal_place_placeholder:
+            decimal_place = set_decimal_place_box(key="Performance_decimal_place_box")
         df_pivot_styler=apply_statsig(df_pivot,selected_statsig_type,base, first_col=3)
         df_pivot_styler_formatted = df_pivot_styler.format(precision=decimal_place, na_rep='-')
 
@@ -744,8 +746,8 @@ def dande_tab_execute(df,tab=st):
         updated_df=apply_statsig(df_pivot,dande_selected_statsig,base,first_col=2)
 
         tab.dataframe(updated_df, hide_index=True)
-        decimal_place = set_decimal_place_box(key="Drivers_decimal_place_box")
-        gen_output_pptx(df_pivot,decimal_place=decimal_place, statsig=dande_selected_statsig,slide_type="Drivers",base=base,name="DriversEquity_"+segment+".pptx",tab=tab,key="DriversEquity")
+        # decimal_place = set_decimal_place_box(key="Drivers_decimal_place_box")
+        gen_output_pptx(df_pivot,decimal_place=0, statsig=dande_selected_statsig,slide_type="Drivers",base=base,name="DriversEquity_"+segment+".pptx",tab=tab,key="DriversEquity")
         gen_output_xl(df_pivot,base,name="DriversEquity_"+segment+".xlsx",tab=tab)
 
 
