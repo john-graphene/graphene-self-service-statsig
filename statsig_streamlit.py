@@ -782,10 +782,10 @@ def app():
 
 
     # ## D&E _tab
-    # df2,f2=get_file_input(dande_tab,sheet_name="Drivers")
-    # if f2 is not None:
-    #     # dande_segment(df2,dande_tab)
-    #     dande_tab_execute(df2,dande_tab)
+    df2,f2=get_file_input(dande_tab,sheet_name="Drivers")
+    if f2 is not None:
+        # dande_segment(df2,dande_tab)
+        dande_tab_execute(df2,dande_tab)
 
 
     # Performance tab
