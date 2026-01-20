@@ -1427,7 +1427,7 @@ def set_cell_statsig_colour(cell, colour):
     #     pass
     for para in cell.text_frame.paragraphs:
         for run in para.runs:
-            # run.font.size = Pt(10)
+            run.font.size = Pt(12)
             if colour == "Green":
                 run.font.color.rgb = GREEN
             if colour == "Red":
@@ -1468,8 +1468,8 @@ def apply_stat_sig(slide, statsig_type, base, decimal_place=0, slide_type="Perfo
         #     col_start_index = 2
         ## Get threshold and compare diff of each segment value against benchmark segment value
         for table_idx, row in slide_table_df.iterrows():
-            # if table_idx >= row_start_index:
-            if table_idx > 1:
+            if table_idx >= row_start_index:
+            # if table_idx > 1:
                 # print("table_idx>=row_start_index:",slide_table_df.iat[table_idx, col_start_index], row)
                 num_list = list(row[col_start_index:len(row)])
                 # num_list = [float(num.strip("%")) for num in num_list if num != "-"]
@@ -1509,7 +1509,7 @@ def apply_stat_sig(slide, statsig_type, base, decimal_place=0, slide_type="Perfo
                                     cell_value = str(cell_value) + "%"
                                 cell.text_frame.paragraphs[0].text = cell_value
                             elif slide_type == "Drivers":
-                                cell.text_frame.paragraphs[0].text= str(int(round(num,0)))
+                                cell.text= str(int(round(num,0)))
 
                             if (diff > threshold) & ("inverse" not in statsig_type):
                                 set_cell_statsig_colour(cell, "Red")
