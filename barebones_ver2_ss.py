@@ -575,124 +575,131 @@ def get_slide_master_df(default_template, placeholder_description_input, slide_m
     return slide_master_df
 
 
-# def fill_text_data(slide, slide_df, slide_master_df, brief_doc_path):
-#     """
-#         Fill Text Placeholders with required text inputs //
-#         WORK IN PROGRESS: PENDING CONFIRMATION OF AI BRIEF WITH BS, UPDATE FOR CROSS-SEGMENT
-#     """
-#     slide_type = slide_df['Slide_Type'].unique()[0]
-#
-#     ## get PH index based on template, last updated 2023-09-26
-#     def get_ph_idx(slide_type, ph_desc):
-#         sub_slide_master_df = slide_master_df[slide_master_df['Slide_Type'] == slide_type]
-#         try:
-#             return sub_slide_master_df[sub_slide_master_df['Placeholder_Description'] == ph_desc][
-#                 'Placeholder_Index'].unique()[0]
-#         except:
-#             return None
-#
-#     ## fill Text PH with text content
-#     for shape in slide.shapes:
-#         if slide.slide_layout.name == "Cover":
-#             if shape.placeholder_format.idx == get_ph_idx(slide_type, "Cover Text PH"):
-#                 doc_header = Document(brief_doc_path).paragraphs[0].text
-#                 shape.text = doc_header.title()
-#                 para_2 = shape.text_frame.add_paragraph()
-#                 run_2_0 = para_2.add_run()
-#                 para_3 = shape.text_frame.add_paragraph()
-#                 run_3_0 = para_3.add_run()
-#                 para_4 = shape.text_frame.add_paragraph()
-#                 run_4_0 = para_4.add_run()
-#                 para_5 = shape.text_frame.add_paragraph()
-#                 run_5_0 = para_5.add_run()
-#                 run_5_1 = para_5.add_run()
-#                 run_2_0.text = "<Report Title>"
-#                 run_2_0.font.size = Pt(24)
-#                 run_2_0.font.bold = False
-#                 run_3_0.text = "<Mmmm YYYY>"
-#                 run_3_0.font.size = Pt(16)
-#                 run_3_0.font.bold = False
-#                 run_4_0.text = " "
-#                 run_4_0.font.size = Pt(36)
-#                 run_4_0.font.bold = False
-#                 run_5_0.text = "AI"
-#                 run_5_1.text = " based research"
-#                 run_5_0.font.size = Pt(20)
-#                 run_5_1.font.size = Pt(20)
-#                 run_5_0.font.color.rgb = RGBColor(255, 0, 0)
-#                 run_5_1.font.color.rgb = RGBColor(0, 0, 0)
-#
-#         if slide.slide_layout.name == "Objective":
-#             if shape.placeholder_format.idx == get_ph_idx(slide_type, "Background Header PH"):
-#                 shape.text = "Background"
-#             if shape.placeholder_format.idx == get_ph_idx(slide_type, "Actions Header PH"):
-#                 shape.text = "Actions to be taken"
-#             if shape.placeholder_format.idx == get_ph_idx(slide_type, "Background Subheader PH"):
-#                 shape.text = "What is the project objective?"
-#             if shape.placeholder_format.idx == get_ph_idx(slide_type, "Actions Subheader PH"):
-#                 shape.text = "What decisions will this inspire?"
-#             if Document(brief_doc_path).tables[0].cell(0, 0).text == "Current Business Challenge":
-#                 brief_objective_table = Document(brief_doc_path).tables[0]
-#                 if shape.placeholder_format.idx == get_ph_idx(slide_type, "Background Text PH"):
-#                     shape.text = brief_objective_table.cell(1, 0).text
-#                 if shape.placeholder_format.idx == get_ph_idx(slide_type, "Actions Text PH"):
-#                     shape.text = brief_objective_table.cell(1, 1).text
-#
-#         if slide.slide_layout.name == "Scope":
-#             if shape.placeholder_format.idx == get_ph_idx(slide_type, "Overview PH"):
-#                 shape.text = "Overview"
-#
-#         if slide.slide_layout.name == "Divider_normal":
-#             if shape.placeholder_format.idx == get_ph_idx(slide_type, "Divider Text PH"):
-#                 shape.text = "What is the next section covering?"
-#
-#         if slide.slide_layout.name == "Scope_of_Work":
-#             if shape.placeholder_format.idx == get_ph_idx(slide_type, "Scope Summary PH"):
-#                 sow_cat = slide_df['Category'].unique()[0]
-#                 sow_subcat = slide_df['Subcategory'].unique()[0]
-#                 sow_country = slide_df['Country'].unique()[0]
-#                 sow_segment = slide_df['Segment'].unique()[0]
-#                 sow_period = slide_df['Cycle'].unique()[0]
-#                 if sow_cat != sow_subcat:
-#                     sow_cat_subcat = f"{sow_cat} ({sow_subcat})"
-#                 else:
-#                     sow_cat_subcat = sow_cat
-#                 shape.text = f"We searched for a unique sample set talking about {sow_cat_subcat} by {sow_segment} in {sow_country} during {sow_period}."
-#
-#         if (slide.slide_layout.name == "Content_Vertical") | (slide.slide_layout.name == "Content_Horizontal_Chart"):
-#             if shape.placeholder_format.idx == get_ph_idx(slide_type, "Country PH"):
-#                 shape.text = slide_df['Country'].astype(str).unique()[0]
-#             if shape.placeholder_format.idx == get_ph_idx(slide_type, "Segment PH"):
-#                 ## Single Segment
-#                 segment_simple = None
-#                 if "Segment" in slide_df.columns:
-#                     segment_simple = str([x.split(" ")[0] for x in slide_df['Segment'].unique()][0])
-#                 ## Cross Segment
-#                 elif "Segment 1" in slide_df.columns:  ## to adjust
-#                     segment_simple = str([x.split(" ")[0] for x in slide_df['Segment 1'].unique()][0])
-#                 shape.text = segment_simple
-#             if shape.placeholder_format.idx == get_ph_idx(slide_type, "Core Commentary PH"):
-#                 shape.text = "For core commentary."
-#             if shape.placeholder_format.idx == get_ph_idx(slide_type, "Supplementary Commentary PH"):
-#                 shape.text = "For supplementary commentary."
-#             if shape.placeholder_format.idx == get_ph_idx(slide_type, "Footnote PH"):
-#                 if slide_type == "Drivers":
-#                     num_ppl_all = int(slide_df['No_of_People'].unique()[0])
-#                     shape.text = f"Scores are derived from conversations by stated sample set (n={num_ppl_all:,}) and sorted in descending order."
-#                 elif slide_type in ["Performance", "Emerging Trends"]:
-#                     shape.text = "Scores are derived from conversations by stated sample set (n=) and sorted in descending order."
-#                 else:
-#                     pass
-#             if shape.placeholder_format.idx == get_ph_idx(slide_type, "Questions Text PH"):
-#                 try:
-#                     questions_to_answer = str(slide_df['Questions'].unique()[0])
-#                     shape.text = questions_to_answer
-#                 except:
-#                     shape.text = "<Pls copy 'Questions to answer' from AI Brief>"
-#
-#         if slide.slide_layout.name == "KOL":
-#             if shape.placeholder_format.idx == get_ph_idx(slide_type, "Title PH"):
-#                 shape.text = "Who are the top influencers/Key Opinion Leaders?"
+def fill_text_data(slide, slide_df, slide_master_df, slide_type="Performance", country="", segment="", brand=""):
+    """
+        Fill Text Placeholders with required text inputs //
+        WORK IN PROGRESS: PENDING CONFIRMATION OF AI BRIEF WITH BS, UPDATE FOR CROSS-SEGMENT
+    """
+    # slide_type = slide_df['Slide_Type'].unique()[0]
+
+    ## get PH index based on template, last updated 2023-09-26
+    def get_ph_idx(slide_type, ph_desc):
+        sub_slide_master_df = slide_master_df[slide_master_df['Slide_Type'] == slide_type]
+        try:
+            return sub_slide_master_df[sub_slide_master_df['Placeholder_Description'] == ph_desc][
+                'Placeholder_Index'].unique()[0]
+        except:
+            return None
+
+    ## fill Text PH with text content
+    for shape in slide.shapes:
+        # if slide.slide_layout.name == "Cover":
+        #     if shape.placeholder_format.idx == get_ph_idx(slide_type, "Cover Text PH"):
+        #         doc_header = Document(brief_doc_path).paragraphs[0].text
+        #         shape.text = doc_header.title()
+        #         para_2 = shape.text_frame.add_paragraph()
+        #         run_2_0 = para_2.add_run()
+        #         para_3 = shape.text_frame.add_paragraph()
+        #         run_3_0 = para_3.add_run()
+        #         para_4 = shape.text_frame.add_paragraph()
+        #         run_4_0 = para_4.add_run()
+        #         para_5 = shape.text_frame.add_paragraph()
+        #         run_5_0 = para_5.add_run()
+        #         run_5_1 = para_5.add_run()
+        #         run_2_0.text = "<Report Title>"
+        #         run_2_0.font.size = Pt(24)
+        #         run_2_0.font.bold = False
+        #         run_3_0.text = "<Mmmm YYYY>"
+        #         run_3_0.font.size = Pt(16)
+        #         run_3_0.font.bold = False
+        #         run_4_0.text = " "
+        #         run_4_0.font.size = Pt(36)
+        #         run_4_0.font.bold = False
+        #         run_5_0.text = "AI"
+        #         run_5_1.text = " based research"
+        #         run_5_0.font.size = Pt(20)
+        #         run_5_1.font.size = Pt(20)
+        #         run_5_0.font.color.rgb = RGBColor(255, 0, 0)
+        #         run_5_1.font.color.rgb = RGBColor(0, 0, 0)
+        #
+        # if slide.slide_layout.name == "Objective":
+        #     if shape.placeholder_format.idx == get_ph_idx(slide_type, "Background Header PH"):
+        #         shape.text = "Background"
+        #     if shape.placeholder_format.idx == get_ph_idx(slide_type, "Actions Header PH"):
+        #         shape.text = "Actions to be taken"
+        #     if shape.placeholder_format.idx == get_ph_idx(slide_type, "Background Subheader PH"):
+        #         shape.text = "What is the project objective?"
+        #     if shape.placeholder_format.idx == get_ph_idx(slide_type, "Actions Subheader PH"):
+        #         shape.text = "What decisions will this inspire?"
+        #     if Document(brief_doc_path).tables[0].cell(0, 0).text == "Current Business Challenge":
+        #         brief_objective_table = Document(brief_doc_path).tables[0]
+        #         if shape.placeholder_format.idx == get_ph_idx(slide_type, "Background Text PH"):
+        #             shape.text = brief_objective_table.cell(1, 0).text
+        #         if shape.placeholder_format.idx == get_ph_idx(slide_type, "Actions Text PH"):
+        #             shape.text = brief_objective_table.cell(1, 1).text
+        #
+        # if slide.slide_layout.name == "Scope":
+        #     if shape.placeholder_format.idx == get_ph_idx(slide_type, "Overview PH"):
+        #         shape.text = "Overview"
+        #
+        # if slide.slide_layout.name == "Divider_normal":
+        #     if shape.placeholder_format.idx == get_ph_idx(slide_type, "Divider Text PH"):
+        #         shape.text = "What is the next section covering?"
+        #
+        # if slide.slide_layout.name == "Scope_of_Work":
+        #     if shape.placeholder_format.idx == get_ph_idx(slide_type, "Scope Summary PH"):
+        #         sow_cat = slide_df['Category'].unique()[0]
+        #         sow_subcat = slide_df['Subcategory'].unique()[0]
+        #         sow_country = slide_df['Country'].unique()[0]
+        #         sow_segment = slide_df['Segment'].unique()[0]
+        #         sow_period = slide_df['Cycle'].unique()[0]
+        #         if sow_cat != sow_subcat:
+        #             sow_cat_subcat = f"{sow_cat} ({sow_subcat})"
+        #         else:
+        #             sow_cat_subcat = sow_cat
+        #         shape.text = f"We searched for a unique sample set talking about {sow_cat_subcat} by {sow_segment} in {sow_country} during {sow_period}."
+
+        if (slide.slide_layout.name == "Content_Horizontal") | (slide.slide_layout.name == "Content_Horizontal_Chart"):
+            if shape.placeholder_format.idx == get_ph_idx(slide_type, "Country PH"):
+                shape.text = country
+                # shape.text = slide_df['Country'].astype(str).unique()[0]
+            if shape.placeholder_format.idx == get_ph_idx(slide_type, "Segment PH"):
+                shape.text = segment
+                ## Single Segment
+                # segment_simple = None
+                # if "Segment" in slide_df.columns:
+                #     segment_simple = str([x.split(" ")[0] for x in slide_df['Segment'].unique()][0])
+                # ## Cross Segment
+                # elif "Segment 1" in slide_df.columns:  ## to adjust
+                #     segment_simple = str([x.split(" ")[0] for x in slide_df['Segment 1'].unique()][0])
+                # shape.text = segment_simple
+            if shape.placeholder_format.idx == get_ph_idx(slide_type, "Core Commentary PH"):
+                shape.text = "For core commentary."
+            if shape.placeholder_format.idx == get_ph_idx(slide_type, "Supplementary Commentary PH"):
+                shape.text = "For supplementary commentary."
+            if shape.placeholder_format.idx == get_ph_idx(slide_type, "Footnote PH"):
+                if slide_type == "Drivers":
+                    # num_ppl_all = int(slide_df['No_of_People'].unique()[0])
+                    shape.text = f"Scores are derived from conversations and sorted in descending order."
+                    # shape.text = f"Scores are derived from conversations by stated sample set (n={num_ppl_all:,}) and sorted in descending order."
+                elif slide_type in ["Performance", "Emerging Trends"]:
+                    shape.text = "Scores are derived from conversations."
+                    # shape.text = "Scores are derived from conversations by stated sample set (n=) and sorted in descending order."
+                else:
+                    pass
+            # if shape.placeholder_format.idx == get_ph_idx(slide_type, "Questions Text PH"):
+            #     try:
+            #         questions_to_answer = str(slide_df['Questions'].unique()[0])
+            #         shape.text = questions_to_answer
+            #     except:
+            #         shape.text = "<Pls copy 'Questions to answer' from AI Brief>"
+        if shape.placeholder_format.idx == get_ph_idx(slide_type, "Top Right PH"):
+            if brand == "[Brand Comparison]":
+                brand = ""
+            shape.text = brand
+        # if slide.slide_layout.name == "KOL":
+        #     if shape.placeholder_format.idx == get_ph_idx(slide_type, "Title PH"):
+        #         shape.text = "Who are the top influencers/Key Opinion Leaders?"
 
 
 def _set_cell_border(cell, ln_type, border_color="0000FF", border_width="101600"):
@@ -775,10 +782,9 @@ def _set_cell_border(cell, ln_type, border_color="0000FF", border_width="101600"
     return cell
 
 
-def format_table_cells(table, table_format):
+def format_table_cells(table, table_format, fixed_table_width = Cm(24)):
     """
-        Apply table/cell formatting as required //
-        WORK IN PROGRESS: ALLOW FOR ROW-WISE/COL-WISE SPECIAL FORMATTING
+        Apply table/cell formatting as required
     """
     ## General formatting - iterate over all cells
 
@@ -844,9 +850,13 @@ def format_table_cells(table, table_format):
 
     else:
         pass
+    ## Format column widths to fixed table width
+    current_table_width = sum(col.width for col in table.columns)
+    scale = fixed_table_width / current_table_width
+    for col in table.columns:
+        col.width = int(col.width * scale)
 
-
-def get_table_format(slide_df, table_config_json, slide_type="Performance", brief_doc_path=""):
+def get_table_format(slide_df, table_config_json, slide_type="Performance"):
     """
         Return table/cell formatting as specified //
         WORK IN PROGRESS: UPDATED DRIVERS AND CROSS SEGMENT
@@ -1183,7 +1193,7 @@ def get_table_format(slide_df, table_config_json, slide_type="Performance", brie
     return table_format_dict[slide_type]
 
 
-def fill_table_data(slide, slide_df, slide_type="Performance",base=None):
+def fill_table_data(slide, slide_df, slide_type="Performance", type_subtype="Type/Subtype", base=None):
     """
         Fill Table Placeholders with required inputs //
         Apply table formatting //
@@ -1214,7 +1224,7 @@ def fill_table_data(slide, slide_df, slide_type="Performance",base=None):
                         col = slide_df.columns[cell_index]
                         if row_index == 0:
                             if col == "Content":
-                                col = "Type/Subtype"
+                                col = type_subtype
                             cell.text = col
                         if row_index > 1:
                             data_value = slide_df.iat[row_index - 2, cell_index]
@@ -1595,7 +1605,7 @@ def apply_stat_sig(slide, statsig_type, base, decimal_place=0, slide_type="Perfo
 """""""""""""""""""""""""""""""""""""""  Execute Functions """""""""""""""""""""""""""""""""""""""""""""
 
 
-def main_execute(df,statsig_type,base,decimal_place=0,slide_type="Performance"):
+def main_execute(df,statsig_type,base,decimal_place=0,slide_type="Performance", country="", segment="", brand="", default_type_subtype="Type/Subtype"):
     """
         Execute all functions to generate sequential data dict and PPT slide sequence with text/table inputs //
         Print for each slide added //
@@ -1606,18 +1616,25 @@ def main_execute(df,statsig_type,base,decimal_place=0,slide_type="Performance"):
     # slide_sequence_dict = get_slide_sequence_values(mapping_path)
     slide_master_df = get_slide_master_df(default_template, placeholder_description_input,
                                           slide_master_placeholders_output)
-    if "Type" in df.columns:
-        first_type = df['Type'].unique()[0]
-        first_subtype = df['Subtype'].unique()[0]
-        df = df[(df['Type']==first_type)&(df['Subtype']==first_subtype)].drop(columns=['Type','Subtype'])
-    # print("main_execute:",statsig_type, df.shape, df.columns)
+    temp_slide_layout_index = slide_master_df[slide_master_df['Slide_Type'] == slide_type]['Slide_Layout_Index'].unique()[0]
 
-    if len(df) > 0:
-        temp_slide_layout_index = slide_master_df[slide_master_df['Slide_Type'] == slide_type]['Slide_Layout_Index'].unique()[0]
+    type_subtype_list = [default_type_subtype]
+    if "Type" in df.columns:
+        df['Type_Subtype'] = df['Type'].astype(str) + " " + df['Subtype'].astype(str)
+        type_subtype_list = list(df['Type_Subtype'].unique())
+        df = df.drop(columns=['Type','Subtype'])
+    else:
+        df['Type_Subtype'] = default_type_subtype
+
+    for type_subtype in type_subtype_list:
+        type_subtype_df = df[df['Type_Subtype']==type_subtype].drop(columns=['Type_Subtype']).reset_index(drop=True)
+        cols_to_drop = [col for col in type_subtype_df.columns if type_subtype_df[col].isna().all()]
+        type_subtype_df = type_subtype_df.drop(columns=cols_to_drop)
+        if len(df) == 0:
+            continue
         new_slide = prs.slides.add_slide(prs.slide_layouts[temp_slide_layout_index])
-        # print(f"{slide_key} slide added using {new_slide.slide_layout.name}")
-        # fill_text_data(new_slide, df, slide_master_df)
-        fill_table_data(new_slide, df, base=base, slide_type=slide_type)
+        fill_text_data(new_slide, type_subtype_df, slide_master_df, slide_type=slide_type, country=country, segment=segment, brand=brand)
+        fill_table_data(new_slide, type_subtype_df, base=base, slide_type=slide_type, type_subtype=type_subtype)
         apply_stat_sig(new_slide, statsig_type, base, decimal_place=decimal_place, slide_type=slide_type)
     # if 'Statsig_Type' in slide_df.columns:
     #     apply_stat_sig(new_slide, slide_df)
