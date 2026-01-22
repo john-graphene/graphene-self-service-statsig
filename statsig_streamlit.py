@@ -504,6 +504,11 @@ def statsig_tab_highlight(updated_df,ss_type,base,decimal_place, tab=st):
     # columns_to_convert = updated_df.columns[1:]
 
     # updated_df[columns_to_convert] = updated_df[columns_to_convert].astype(float)
+    updated_df = updated_df.dropna(axis=0, how='all')
+    # df = df.dropna(axis=1, how='all')
+    drop_cols_subset = [col for col in updated_df.columns if col.startswith("Segment") or col.startswith("Period")]
+    cols_to_drop = [col for col in drop_cols_subset if updated_df[col].isna().all()]
+    updated_df = updated_df.drop(columns=cols_to_drop)
 
     for column in updated_df.columns[1:]:
         updated_df[column] = pd.to_numeric(updated_df[column].str.replace('%', ''), errors='coerce')
@@ -680,7 +685,7 @@ def multi_select_and_df(df1, tab=st, decimal_place=1):
         gen_output_pptx(df_pivot, decimal_place=decimal_place, statsig=selected_statsig_type, base=base,
                         tab=dataframe_show, key="Performance" + selected_statsig_type,
                         country=selected_country, segment=selected_segment, brand=selected_brand)
-        gen_output_xl(df_pivot_styler_formatted, base, tab=dataframe_show)
+        gen_output_xl(df_pivot_styler_formatted, base, tab=dataframe_show, name=f"Performance_Statsig_output.xlsx")
 
     # except TypeError:
     #     dataframe_show.write("Multiple Type and Subtype columns")
@@ -748,7 +753,8 @@ def dande_tab_execute(df,tab=st):
     tab.dataframe(updated_df, hide_index=True)
     # decimal_place = set_decimal_place_box(key="Drivers_decimal_place_box")
     gen_output_pptx(df_pivot,decimal_place=0, statsig=dande_selected_statsig,slide_type="Drivers",base=base,name="DriversEquity_"+segment+".pptx",tab=tab,key="DriversEquity", segment=segment)
-    gen_output_xl(updated_df,base,name="DriversEquity_"+segment+".xlsx",tab=tab)
+    gen_output_xl(updated_df,base,name="DriversEquity_Statsig_output.xlsx",tab=tab)
+    # gen_output_xl(updated_df,base,name="DriversEquity_"+segment+".xlsx",tab=tab)
 
 
 def app():
@@ -772,10 +778,11 @@ def app():
         st.subheader("Results")
         st.dataframe(applied_df)
     gen_output_pptx(updated_df, decimal_place=decimal_place, statsig=ss_type, base=base, tab=statsig_tab,key="self_service_within_period")
-    # gen_output_xl(applied_df, base, tab=statsig_tab)  ## COMMENTED OUT, CAUSES DRIVERS XL OUTPUT TO BE CORRUPTED
+    gen_output_xl(applied_df, base, tab=statsig_tab, name=ss_type+"_Statsig_output.xlsx")
     ## PoP tab
     pop_tab.write("Input **Content** in the first column, and available periods data in chronological order.")
     updated_pop_df = empty_pop_df(pop_tab)
+    pop_tab.write("*Select PoP based on previous period of comparison, as Base may change over time.*")
     pop_base = pop_statsig_tab_sel_box(pop_tab)
     pop_placeholder = pop_tab.container()
     pop_decimal_place = set_decimal_place_box(pop_tab, key="PoP_decimal_place_box")
@@ -783,7 +790,7 @@ def app():
     with pop_placeholder:
         st.subheader("Results")
         st.dataframe(applied_pop_df)
-    # gen_output_xl(applied_pop_df, base, tab=pop_tab)
+    # gen_output_xl(applied_pop_df, base, tab=pop_tab, name="PoP_Statsig_output.xlsx")  ## COMMENTED OUT, CAUSES OTHER XL OUTPUT TO BE CORRUPTED
 
 
     # ## D&E _tab
