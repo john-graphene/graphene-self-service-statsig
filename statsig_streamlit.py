@@ -406,6 +406,9 @@ def apply_statsig(df_pivot, statsig_type, base, first_col=1):
         Benchmark Stat-sig: Compare each data point to ref benchmark value to determine stat-superior/inferior of benchmark value against other value. //
         Set cell font colour to green/red if diff exceeds Stat-Sig threshold.
     """
+    if len(df_pivot) == 0:
+        df_pivot = pd.io.formats.style.Styler(df_pivot)
+        return df_pivot
     def max_logic(row, format, first_col):
         values = row[first_col:]
         highlight = None
@@ -685,7 +688,7 @@ def multi_select_and_df(df1, tab=st, decimal_place=1):
         gen_output_pptx(df_pivot, decimal_place=decimal_place, statsig=selected_statsig_type, base=base,
                         tab=dataframe_show, key="Performance" + selected_statsig_type,
                         country=selected_country, segment=selected_segment, brand=selected_brand)
-        gen_output_xl(df_pivot_styler_formatted, base, tab=dataframe_show, name=f"Performance_Statsig_output.xlsx")
+        gen_output_xl(df_pivot_styler_formatted, base, tab=dataframe_show, name=f"Performance_{selected_statsig_type}_Statsig_output.xlsx")
 
     # except TypeError:
     #     dataframe_show.write("Multiple Type and Subtype columns")
