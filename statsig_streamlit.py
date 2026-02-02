@@ -407,7 +407,7 @@ def apply_statsig(df_pivot, statsig_type, base, first_col=1):
         Set cell font colour to green/red if diff exceeds Stat-Sig threshold.
     """
     if len(df_pivot) == 0:
-        df_pivot = pd.io.formats.style.Styler(df_pivot)
+        df_pivot = df_pivot.style.apply(lambda x: x)
         return df_pivot
     def max_logic(row, format, first_col):
         values = row[first_col:]
