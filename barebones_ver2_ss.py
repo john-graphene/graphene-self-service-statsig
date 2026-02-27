@@ -1543,7 +1543,8 @@ def apply_stat_sig(slide, statsig_type, base, decimal_place=0, slide_type="Perfo
             if table_idx > 1:
                 num_list = list(row[col_start_index:len(row)])
                 # num_list = [float(num) for num in num_list if num != "-"]
-                num_list = [num if num =="-" else float(num) for num in num_list]
+                # num_list = [num if num =="-" else float(num) for num in num_list]
+                num_list = [0 if num =="-" else float(num.strip().strip("%")) for num in num_list]
                 fillna_num_list = [0 if num =="-" else float(num) for num in num_list]
 
                 for num_idx, num in enumerate(num_list):
